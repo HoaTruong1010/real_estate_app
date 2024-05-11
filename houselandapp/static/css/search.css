@@ -1,0 +1,284 @@
+div.search {
+    height:30rem;
+    width: 100%;
+    margin: 1.5rem 0;
+
+}
+
+.Slogan-text {
+    max-width: 70%;
+    position: relative;
+}
+
+div#search {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 1;
+    z-index: 200;
+    transition: opacity 1s ease-out;
+}
+
+.show-search {
+  opacity: 1 !important;
+}
+
+.search > div {
+    width: 90%;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: lightgrey 0 10px 10px 10px;
+}
+
+.search h3 {
+    padding: 25px 0;
+    font-family:Slogan1;
+    font-size:25px;
+    color: darkcyan !important;
+    text-align: center;
+}
+
+form#form {
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+form#form > div {
+    width: 100%;
+}
+
+.bootstrap-select {
+    width: 100% !important;
+}
+
+.dropdown-menu {
+    max-height: 200px;
+    overflow: auto;
+}
+
+.infield {
+    position: relative;
+}
+
+input.add{
+    width: 100%;
+    margin-top: 10px;
+    padding:12px 15px;
+    background-color: #f3f3f3;
+    border: none;
+    outline: none;
+    height: 39px;
+    border-radius: 0 7px 7px 0px;
+}
+
+input[type='number'] {
+    margin-top:0;
+}
+
+.infield input[type='number']::-webkit-inner-spin-button,
+.infield input[type='number']::-webkit-outer-spin-button {
+    display: none;
+}
+
+label {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    width: 0%;
+    height: 2px;
+    background: var(--linear-grad);
+    transition: 0.3s;
+}
+
+input.add:focus ~ label {
+    width: 100%;
+}
+
+i.search {
+    background-color: #f3f3f3;
+    height: 39px;
+    line-height:39px;
+}
+
+i.search:before {
+    padding-left: 10px;
+}
+
+button.area {
+    width: 200px;
+}
+
+.filter-option-inner-inner {
+    color: black;
+}
+
+.right {
+  display: block;
+  margin-top: 0.125em;
+  margin-left: 0.125em;
+  position: absolute;
+  top: 0;
+  left: 100%;
+}
+
+.area-show > button {
+    max-width: 200px;
+    background-color: #f3f3f3;
+    text-overflow: ellipsis;
+    overflow:hidden;
+}
+
+.area {
+    background-color: #f3f3f3;
+    height: 39px;
+    line-height:39px;
+    border-radius: 0px 7px 7px 0px;
+    margin-bottom: 0;
+    padding: 0px !important;
+    padding: 0 15px;
+}
+
+i.search-right:before {
+    padding-right: 10px;
+}
+
+input.add-right{
+    margin:0;
+    padding:12px 15px;
+    background-color: #f3f3f3;
+    border: none;
+    outline: none;
+    height: 39px;
+    border-radius: 7px;
+}
+
+.btn-light {
+    background-color: #f3f3f3;
+    border-radius: 7px 0 0 7px !important; 
+    height: 39px;
+    border: 0;
+}
+
+.Slogan-btn {
+    animation-duration: 5s !important;
+}
+
+
+.filter {
+    display: none;
+}
+
+  
+.notice {
+    background-color: rgb(242, 242, 242);
+    padding: 12px 24px;
+    border-radius: 4px;
+    margin-bottom: 2%;
+}
+
+.warning-title {
+    font-size: 13px;
+    line-height: 20px;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    color: rgb(44, 44, 44);
+}
+
+.step{
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    color: rgb(255, 255, 255);
+    background-color: rgb(20, 158, 250);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    max-width: 18px;
+    max-height: 18px;
+    margin-right: 8px;
+}
+
+.warning-content{
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.step-content{
+    font-family: Roboto;
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: 400;
+    color: rgb(44, 44, 44);
+    text-align: left;
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+.label-center{
+    width: 100%; 
+    text-align: center;
+}
+
+
+.slider {
+    height: 5px;
+    width: 60%;
+    border-radius: 5px;
+    background: lightgrey;
+    position: relative;
+    top: 45%;
+    margin: 0 5%;
+}
+
+.slider .progress {
+    height: 5px;
+    background:  #17a2b8;
+    position: absolute;
+    left: 10px;
+    right: 10px;
+}
+
+.range-input input{
+    position: absolute;
+    height: 5px;
+    width: 100%;
+    top: 0;
+    left: 0px;
+    appearance: none;
+    background: none;
+    pointer-events: none;
+}
+
+.range-input input::-webkit-slider-thumb{
+   height: 10px;
+   width: 10px;
+   background: #17a2b8;
+   appearance: none;
+   border-radius: 50%;
+   pointer-events: auto;
+}
+
+.label-title {
+    max-height: 39px;
+    overflow: hidden;
+    text-wrap: nowrap;
+}
+
+.price-value{
+    width: 20%;
+    height: 39px;
+    overflow: hidden;
+    text-wrap: nowrap;
+}

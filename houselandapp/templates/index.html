@@ -1,0 +1,305 @@
+{% extends 'layout/base.html' %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
+{% endblock %}
+
+{% block content %}
+{% if posts.__len__() > 0 %}
+<section class="handbook">
+    <div class="title">
+        <h2>Mua bán</h2>
+    </div>
+    <div class="flex handbook-content">
+        <div class="d-flex flex-wrap justify-content-between handbook-items">
+            {% for p in posts %}
+            {% if p.issales %}
+            <div class="flex1 handbook-item">
+                <div class="col30 handbook-img item{{p.id}}-c3 flex" id="img-{{p.id}}"></div>
+                <div class="col70 handbook-info item-c7">
+                    <p class="overflow" style="color: blue; font-size: 12px; height: 28px;"><i
+                            class='fas fa-map-marker-alt'> </i>
+                        <span class="p-a">{{p.address}}</span>
+                    </p>
+                    </p>
+                    <h3 class="overflow" style="font-size:15px;">{{p.title}}</h3>
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-start">
+                            <p class='date' style="font-size:13px;"><i class="fab fa-windows"></i> <b>Diện tích:</b>
+                                {{"{:,}".format(p.area)}}
+                                m<sup>2</sup></p>
+                            {%if p.bedrooms != 0%}
+                            <p style="font-size: 13px; margin-bottom:0px; color: grey; left: 0;">
+                                - <i class="fas fa-bed"></i> <span>{{p.bedrooms}} phòng ngủ</span>
+                            </p>
+                            {%endif%}
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <p class='date' style="color: red;font-size:13px;"><i class="fas fa-dollar-sign"></i> <b>Giá:
+                            </b> <span class="display-price">{{p.price}}
+                        </p>
+                        <p style="font-size: 13px; margin-bottom:0px; color: grey; left: 0;">
+                            <i class="fas fa-clock"></i> <span class="publish_date">{{p.updated_at}}</span>
+                        </p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-start">
+                            <a class="btn btn-primary" href="/posts/{{p.id}}"
+                                style="font-size: 13px; width: 100px; height: 30px; margin-top: 10px; line-height: 15px;">
+                                Xem chi tiết
+                            </a>
+                            {% if p.view > 0%}
+                            <span class="view">{{"{:,}".format(p.view)}} lượt xem</span>
+                            {%endif%}
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            {% if current_user.is_authenticated %}
+                            {% if not p in report_list %}
+                            <a class="btn btn-outline-warning" href="javascript:;" title="Report"
+                                style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 0;"
+                                onclick="report(`{{p.id}}`)">
+                                <i class="far fa-flag"></i>
+                            </a>
+                            {% else %}
+                            <a class="btn btn-warning" href="javascript:;" title="Report"
+                                style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 0;"
+                                onclick="report(`{{p.id}}`)">
+                                <i style="color: white;" class="far fa-flag"></i>
+                            </a>
+                            {% endif %}
+                            {% if p in saved_list %}
+                            <a class="btn btn-danger {{p.id}}" href="javascript:;" title="Saved"
+                                onclick="reactPost(`{{p.id}}`)"
+                                style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
+                                <i class="far fa-bookmark"></i>
+                            </a>
+                            {% else %}
+                            <a class="btn btn-outline-danger {{p.id}}" href="javascript:;" title="Save"
+                                onclick="reactPost(`{{p.id}}`)"
+                                style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
+                                <i class="far fa-bookmark"></i>
+                            </a>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {%endfor%}
+        </div>
+    </div>
+
+    {% if pages_sales > 1 %}
+    <a class="btn btn-info d-flex justify-content-center" href="/sales/all" aria-label="Previous">
+        Xem thêm
+    </a>
+    {% endif %}
+</section>
+{% endif %}
+
+{% if rent_posts.__len__() > 0 %}
+<section class="handbook">
+    <div class="title">
+        <h2>Cho Thuê</h2>
+    </div>
+    <div class="flex handbook-content">
+        <div class="d-flex flex-wrap justify-content-between handbook-items">
+            {% for p in rent_posts %}
+            <div class="flex1 handbook-item">
+                <div class="col30 handbook-img item{{p.id}}-c3 flex" id="img-{{p.id}}"></div>
+                <div class="col70 handbook-info item-c7">
+                    <p class="overflow" style="color: blue; font-size: 12px; height: 28px;"><i
+                            class='fas fa-map-marker-alt'> </i>
+                        <span class="p-a">{{p.address}}</span>
+                    </p>
+                    </p>
+                    <h3 class="overflow" style="font-size:15px;">{{p.title}}</h3>
+                    <div class="d-flex justify-content-start">
+                        <p class='date' style="font-size:13px;"><i class="fab fa-windows"></i> <b>Diện tích:</b>
+                            {{"{:,}".format(p.area)}}
+                            m<sup>2</sup></p>
+                        {%if p.bedrooms != 0%}
+                        <p style="font-size: 13px; margin-bottom:0px; color: grey; left: 0;">
+                            - <i class="fas fa-bed"></i> <span>{{p.bedrooms}} phòng ngủ</span>
+                        </p>
+                        {%endif%}
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <p class='date' style="color: red;font-size:13px;"><i class="fas fa-dollar-sign"></i> <b>Giá:
+                            </b> <span class="display-price">{{p.price}}
+                        </p>
+                        <p style="font-size: 13px; margin-bottom:0px; color: grey; left: 0;">
+                            <i class="fas fa-clock"></i> <span class="publish_date">{{p.updated_at}}</span>
+                        </p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-start">
+                            <a class="btn btn-primary" href="/posts/{{p.id}}"
+                                style="font-size: 13px; width: 100px; height: 30px; margin-top: 10px; line-height: 15px;">
+                                Xem chi tiết
+                            </a>
+                            {% if p.view > 0%}
+                            <span class="view">{{"{:,}".format(p.view)}} lượt xem</span>
+                            {%endif%}
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            {% if current_user.is_authenticated %}
+                            {% if not p in report_list %}
+                            <a class="btn btn-outline-warning" href="javascript:;" title="Report"
+                                style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 0;"
+                                onclick="report(`{{p.id}}`)">
+                                <i class="far fa-flag"></i>
+                            </a>
+                            {% else %}
+                            <a class="btn btn-warning" href="javascript:;" title="Report"
+                                style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 0;"
+                                onclick="report(`{{p.id}}`)">
+                                <i style="color: white;" class="far fa-flag"></i>
+                            </a>
+                            {% endif %}
+                            {% if p in saved_list %}
+                            <a class="btn btn-danger {{p.id}}" href="javascript:;" title="Saved"
+                                onclick="reactPost(`{{p.id}}`)"
+                                style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
+                                <i class="far fa-bookmark"></i>
+                            </a>
+                            {% else %}
+                            <a class="btn btn-outline-danger {{p.id}}" href="javascript:;" title="Save"
+                                onclick="reactPost(`{{p.id}}`)"
+                                style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
+                                <i class="far fa-bookmark"></i>
+                            </a>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            {%endfor%}
+        </div>
+    </div>
+
+    {% if pages_rents > 1 %}
+    <a class="btn btn-info d-flex justify-content-center" href="/rents/all" aria-label="Previous">
+        Xem thêm
+    </a>
+    {% endif %}
+</section>
+{% else %}
+<div class="alert alert-danger">
+    Không có bài viết nào được tìm thấy!
+</div>
+{% endif %}
+
+{% if viewed_list %}
+<div class="hint">
+    <h4 style="color: goldenrod;">Bài viết đã xem</h4>
+    <hr>
+    <div class="cards flex justify-content-start" style="flex-wrap: wrap;" id="cards">
+        {% for i in range(0, 4) %}
+        {%if i < viewed_list.__len__()%}
+        <div class="card hint-card">
+            <div class="card-image"><img class="card-img-top" src="{{viewed_list[i].images[0]}}" alt="Card image cap"></div>
+            <div class="hint-address">
+                <p><i class="fas fa-map-marker-alt"></i> {{viewed_list[i].address}}
+                </p>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{viewed_list[i].title}}</h5>
+                <p><i class="fab fa-windows"></i> <b>Diện tích:</b>
+                    {{"{:,}".format(viewed_list[i].area)}}
+                    m<sup>2</sup></p>
+                <p><i class="fas fa-dollar-sign"></i> Giá:  <span class="display-price">{{viewed_list[i].price}}</span>
+                </p>
+                <a href="/posts/{{viewed_list[i].id}}" class="btn btn-primary">Xem bài viết</a>
+            </div>
+        </div>
+        {%endif%}
+        {% endfor %}
+    </div>
+    {% if viewed_list.__len__() > 4 %}
+    <div class="w-100 d-flex justify-content-end"><a class="link-offset-2 link-underline link-underline-opacity-25"
+            style="width: 150px; text-underline-offset: 0.25em; font-weight: bold;"
+            href="/profile/{{current_user_id}}?viewed=true" aria-label="Previous">
+            Xem thêm <i class="fas fa-chevron-right"></i>
+        </a></div>
+
+    {%endif%}
+    <hr>
+</div>
+{%endif%}
+
+<div class="container__banner">
+    <div class="grid wide">
+        <div class="container__banner-wrap">
+            <div class="container__banner-title col l-4 m-12 c-12">
+                <h1>“Đừng quên giới thiệu Afforda</h1>
+                <h1> cho bạn bè, người thân của bạn nhé!”</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="sales flex justify-content-around">
+    <div class="intro-item">
+        <div class="intro-img">
+            <img src="https://staticfile.batdongsan.com.vn/images/box-link-footer/ForSale.svg" alt="Bất động sản bán">
+        </div>
+        <div class="intro-title">
+            Bất động sản bán
+        </div>
+        <div class="intro-desc">
+            Bạn có thể tìm thấy ngôi nhà mơ ước hoặc cơ hội đầu tư hấp dẫn thông qua lượng tin rao lớn, uy tín về các
+            loại hình
+            <b>bất động sản bán</b> tại Việt Nam, bao gồm bán nhà riêng,
+            <b>bán nhà mặt tiền</b>, bán căn hộ chung cư, bán biệt thự, bán đất,
+            <b>bán shophouse</b> và các loại hình BĐS khác.
+        </div>
+    </div>
+    <div class="intro-item">
+        <div class="intro-img">
+            <img src="https://staticfile.batdongsan.com.vn/images/box-link-footer/ForRent.svg"
+                alt="Bất động sản cho thuê">
+        </div>
+        <div class="intro-title">
+            Bất động sản cho thuê
+        </div>
+        <div class="intro-desc">
+            Cập nhật thường xuyên và đầy đủ các loại hình
+            <b>bất động sản cho thuê</b> như: thuê phòng trọ, nhà riêng,
+            <b>thuê biệt thự</b>, văn phòng, kho xưởng hay
+            <b>thuê mặt bằng</b> kinh doanh giúp bạn nhanh chóng tìm được bất động sản ưng ý.
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+<script src="{{ url_for('static', filename='js/react.js') }}"></script>
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
+<script>
+    const unit = ['VNĐ', 'nghìn đồng', 'triệu đồng', 'tỷ đồng']
+    $('.display-price').html((idx, item) => {
+        let i = 0;
+        var price = parseFloat(item);
+        while (price >= 1000) {
+            if (i == 3) {
+                break;
+            }
+            i = i + 1;
+            price = price / 1000;
+        }
+        return ` ${price} ${unit[i]}`;
+
+    });
+    $('.p-a').text((idx, item) => {
+        return item.split("Xem")[0]
+    });
+</script>
+{% endblock %}

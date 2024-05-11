@@ -1,0 +1,221 @@
+{% extends 'admin/master.html' %}
+{% block head_css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+<link rel="stylesheet" type="text/css"
+    href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/bootstrap-extended.min.css">
+<link rel="stylesheet" type="text/css"
+    href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/fonts/simple-line-icons/style.min.css">
+<link rel="stylesheet" type="text/css"
+    href="https://pixinvent.com/stack-responsive-bootstrap-4-admin-template/app-assets/css/colors.min.css">
+{% endblock %}
+
+{% block body %}
+{% if current_user.is_authenticated %}
+<div class="row mt-5">
+    <div class="col-md-3">
+        <div class="card profile-card-5">
+            <div class="card-img-block">
+                <img class="card-img-top" src="{{current_user.avatar}}" alt="Card image cap">
+            </div>
+            <div class="card-body pt-0">
+                <h5 class="card-title">Hi, {{current_user.name}}</h5>
+                <p class="card-text">Chào mừng bạn đã quay trở lại. Hãy xem ngày hôm nay có gì nhé!</p>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="row">
+            <div class="col-xl-4 col-sm-6 col-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="media d-flex">
+                                <div class="media-body text-left">
+                                    <h3 class="success">{{stats[2]}}</h3>
+                                    <span>Tài khoản mới</span>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="icon-user success font-large-2 float-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-sm-6 col-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="media d-flex">
+                                <div class="media-body text-left">
+                                    <h3 id="new-posts">{{stats[0]}}</h3>
+                                    <span>Bài viết chờ duyệt</span>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="icon-book-open primary font-large-2 float-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-sm-6 col-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="media d-flex">
+                                <div class="media-body text-left">
+                                    <h3 id="new-reports" class="warning">{{stats[4]}}</h3>
+                                    <span>Báo cáo mới</span>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="icon-speech warning font-large-2 float-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-4 col-sm-6 col-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="media d-flex">
+                                <div class="media-body text-left">
+                                    <h3 class="success">{{stats[3]}}</h3>
+                                    <span>Tổng số tài khoản</span>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="icon-user success font-large-2 float-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-sm-6 col-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="media d-flex">
+                                <div class="media-body text-left">
+                                    <h3>{{stats[1]}}</h3>
+                                    <span>Tổng số bài viết</span>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="icon-book-open primary font-large-2 float-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-sm-6 col-12">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="media d-flex">
+                                <div class="media-body text-left">
+                                    <h3 class="warning">{{stats[5]}}</h3>
+                                    <span>Tổng số báo cáo</span>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="icon-speech warning font-large-2 float-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mt-1">
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-header border-0">
+                <h3 class="mb-0">Rank Users</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-items-center table-flush">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Tên</th>
+                            <th scope="col">Số lượng bài viết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in stats[6]%}
+                        <tr>
+                            <th scope="row">
+                                <div class="media align-items-center">
+                                    <a href="#" class="avatar rounded-circle mr-3">
+                                        <img alt="Image placeholder" src="{{s[0]}}">
+                                    </a>
+                                    <div class="media-body">
+                                        <span class="mb-0 text-sm">{{s[1]}}</span>
+                                    </div>
+                                </div>
+                            </th>
+                            <td>
+                                {{s[2]}}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header border-0"
+                style="display: flex; justify-content: flex-start; align-items: flex-end;">
+                <h3 style="margin-right: 10px;" class="col-md-4 mb-0">Statistic Posts In This Year</h3>
+                <select class="custom-select col-md-2" aria-label="Default select example" id="select_month">
+                    <option selected value="0">Cả năm</option>
+                    <option value="1">Tháng 1</option>
+                    <option value="2">Tháng 2</option>
+                    <option value="3">Tháng 3</option>
+                    <option value="4">Tháng 4</option>
+                    <option value="5">Tháng 5</option>
+                    <option value="6">Tháng 6</option>
+                    <option value="7">Tháng 7</option>
+                    <option value="8">Tháng 8</option>
+                    <option value="9">Tháng 9</option>
+                    <option value="10">Tháng 10</option>
+                    <option value="11">Tháng 11</option>
+                    <option value="12">Tháng 12</option>
+                </select>
+            </div>
+            <div>
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<p>Vui lòng <a href="/login-register">đăng nhập</a> tài khoản quản trị viên để tiếp tục!</p>
+{% endif %}
+{% endblock %}
+
+{% block tail_js %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/stats.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"
+        integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    const userBadge = `{{is_new_user}}`;
+    const postsBadge = parseInt(`{{stats[1]}}`);
+    const reportBadge = parseInt(`{{stats[4]}}`);
+    const chatBadge = parseInt(`{{new_chat}}`);
+    const currentUser = `{{current_user.id}}`;
+</script>
+{% endblock %}

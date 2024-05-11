@@ -1,0 +1,84 @@
+body {
+  background: url(https://res.cloudinary.com/doaux2ndg/image/upload/v1670076220/FlightMangement/nhaTrang_lwglis.jpg);
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  max-height: 100vh;
+}
+.container {
+    height: calc(100% - 87px);
+    margin : 0 auto !important;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  width: 5px;
+  background: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+  width: 1em;
+  background-color: #ddd;
+  outline: 1px solid slategrey;
+  border-radius: 1rem;
+}
+
+.text-small {
+  font-size: 0.9rem;
+}
+
+.messages-box {
+  height: calc(100% - 38.39px);
+  overflow-y: scroll;
+}
+
+#history-messages {
+  height: calc(100% - 48px);
+  overflow-y: scroll; 
+  display: none; 
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+  height: 100%;
+}
+
+input::placeholder {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.active {
+    background-color: lightblue !important;
+    border:none;
+}
+
+.active p {
+    color:#fff;
+}
+
+p {
+  display: block !important;
+}
+
+.col-7, .col-5, .bg-white {
+  height: 100%;
+}
+
+
+#chat-box {
+  height:100%; 
+  position: relative;
+}
+
+#typing {
+  position: absolute; 
+  width:100%; 
+  bottom:0px; 
+  right:0;  
+  z-index:1000;
+}

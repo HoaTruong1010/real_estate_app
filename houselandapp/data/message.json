@@ -1,0 +1,306 @@
+[{
+    "id": -1,
+    "is_true": false,
+    "for": "",
+    "content": null
+},{
+    "id": 0,
+    "is_true": true,
+    "for": "",
+    "content": "Đăng ký thành công! Vui lòng đăng nhập để tiếp tục!"
+},
+{
+    "id": 1,
+    "is_true": false,
+    "for": "",
+    "content": "**Tên có tối đa 40 ký tự!"
+},
+{
+    "id": 2,
+    "is_true": false,
+    "for": "",
+    "content": "**Số điện thoại không hợp lệ!"
+},
+{
+    "id": 3,
+    "is_true": false,
+    "for": "",
+    "content": "**Email chỉ chứa tối đa 50 ký tự!"
+},
+{
+    "id": 4,
+    "is_true": false,
+    "for": "",
+    "content": "**Password chỉ chứa tối đa 50 ký tự!"
+},
+{
+    "id": 5,
+    "is_true": false,
+    "for": "",
+    "content": "**Tên không được để trống!"
+},
+{
+    "id": 6,
+    "is_true": false,
+    "for": "",
+    "content": "**Email không hợp lệ!"
+},
+{
+    "id": 7,
+    "is_true": false,
+    "for": "",
+    "content": "**Password chưa được nhập!"
+},
+{
+    "id": 8,
+    "is_true": false,
+    "for": "",
+    "content": "**Số điện thoại đã tồn tại!"
+},
+{
+    "id": 9,
+    "is_true": false,
+    "for": "",
+    "content": "Đã xảy ra lỗi! Vui lòng thử lại!"
+},
+{
+    "id": 10,
+    "is_true": false,
+    "for": "",
+    "content": "**Số điện thoại hoặc mật khẩu không đúng!"
+},
+{
+    "id": 11,
+    "is_true": false,
+    "for": "",
+    "content": "**Vui lòng chọn giới tính!"
+},
+{
+    "id": 12,
+    "is_true": false,
+    "for": "",
+    "content": "**Ngày sinh không hợp lệ!"
+},
+{
+    "id": 14,
+    "is_true": false,
+    "for": "",
+    "content": "**Email đã tồn tại!"
+},
+{
+    "id": 15,
+    "is_true": true,
+    "for": "",
+    "content": "Cập nhật thành công!"
+},
+{
+    "id": 16,
+    "is_true": false,
+    "for": "",
+    "content": "**Mật khẩu hiện tại không đúng!"
+},
+{
+    "id": 17,
+    "is_true": false,
+    "for": "",
+    "content": "**Mật khẩu mới chưa đủ mạnh!"
+},
+{
+    "id": 18,
+    "is_true": false,
+    "for": "",
+    "content": "**Mật khẩu mới không khớp!"
+},
+{
+    "id": 19,
+    "is_true": false,
+    "for": "",
+    "content": "**Vui lòng chọn ảnh chân dung khớp với ảnh trên CCCD/CMND!"
+},
+{
+    "id": 20,
+    "is_true": false,
+    "for": "",
+    "content": "**Vui lòng chọn ảnh CCCD/CMND mặt trước theo yêu cầu!"
+},
+{
+    "id": 21,
+    "is_true": false,
+    "for": "",
+    "content": "**Vui lòng chọn ảnh CCCD/CMND mặt sau! theo yêu cầu!"
+},
+{
+    "id": 22,
+    "is_true": false,
+    "for": "",
+    "content": "**Vui lòng chọn ảnh CCCD/CMND cùng 1 thẻ và đúng thứ tự!"
+},
+{
+    "id": 23,
+    "is_true": true,
+    "for": "",
+    "content": "Yêu cầu đã được gửi, kết quả xét duyệt sẽ được thông báo sau 2 - 3 ngày làm việc!"
+},
+{
+    "id": 24,
+    "is_true": false,
+    "for": "",
+    "content": "**Vui lòng đồng ý với chúng tôi để tiếp tục!"
+},
+{
+    "id": 25,
+    "is_true": false,
+    "for": "",
+    "content": "**Vui lòng hoàn thành thông tin liên hệ trước khi trở thành nhà môi giới!"
+},
+{
+    "id": 26,
+    "is_true": false,
+    "for": "",
+    "content": "**Email đã được sử dụng, vui lòng đăng nhập bằng số điện thoại và mật khẩu!"
+},
+{
+    "id": 27,
+    "is_true": true,
+    "for": "",
+    "content": "Thành công! \nYêu cầu đăng ký đã bị hủy! \nCảm ơn bạn đã sử dụng dịch vụ của Afforda!"
+},
+{
+    "id": 28,
+    "is_true": false,
+    "for": "",
+    "content": "**Mã xác thực không đúng!"
+},
+{
+    "id": 29,
+    "is_true": false,
+    "for": "",
+    "content": "**Ảnh CCCD/CMND đã được đăng ký trên hệ thống!\nVui lòng chọn ảnh khác!"
+},
+{
+    "id": 30,
+    "is_true": false,
+    "for": "post_category",
+    "content": "**Vui lòng chọn danh mục tin đăng!"
+},
+{
+    "id": 31,
+    "is_true": false,
+    "for": "post_issales",
+    "content": "**Vui lòng chọn danh mục bất động sản!"
+},
+{
+    "id": 32,
+    "is_true": false,
+    "for": "post_address",
+    "content": "**Vui lòng chọn đầy đủ Tỉnh/Thành phố, Quận/Huyện và Phường/Xã!"
+},
+{
+    "id": 33,
+    "is_true": false,
+    "for": "post_street",
+    "content": "**Vui lòng nhập tên đường/xóm hoặc địa chỉ cụ thể!"
+},
+{
+    "id": 34,
+    "is_true": false,
+    "for": "post_cate-prop",
+    "content": "**Vui lòng chọn loại hình bất động sản!"
+},
+{
+    "id": 35,
+    "is_true": false,
+    "for": "post_area",
+    "content": "**Vui lòng nhập diện tích!"
+},
+{
+    "id": 36,
+    "is_true": false,
+    "for": "post_price",
+    "content": "**Vui lòng nhập giá!"
+},
+{
+    "id": 37,
+    "is_true": false,
+    "for": "post_bedrooms",
+    "content": "**Vui lòng nhập số phòng ngủ!"
+},
+{
+    "id": 38,
+    "is_true": false,
+    "for": "post_bathrooms",
+    "content": "**Vui lòng nhập số phòng tắm, vệ sinh!"
+},
+{
+    "id": 39,
+    "is_true": false,
+    "for": "post_policy",
+    "content": "**Vui lòng nhập giấy tờ pháp lý!"
+},
+{
+    "id": 40,
+    "is_true": false,
+    "for": "post_title",
+    "content": "**Vui lòng nhập tiêu đề!"
+},
+{
+    "id": 41,
+    "is_true": false,
+    "for": "post_expire-at",
+    "content": "**Vui lòng chọn ngày hết hạn phù hợp!"
+},
+{
+    "id": 42,
+    "is_true": false,
+    "for": "post_description",
+    "content": "**Vui lòng nhập mô tả cho bất động sản!"
+},
+{
+    "id": 43,
+    "is_true": false,
+    "for": "post_images",
+    "content": "**Vui lòng chọn tối thiểu 1 hình!"
+},
+{
+    "id": 44,
+    "is_true": true,
+    "for": "post_success",
+    "content": "Bài viết đã được chuyển qua cho chúng tôi xem xét!\nVui lòng đợi phản hồi từ chúng tôi!"
+},
+{
+    "id": 45,
+    "is_true": true,
+    "for": "post_success",
+    "content": "Bài viết đã được cập nhật thành công!"
+},
+{
+    "id": 46,
+    "is_true": false,
+    "for": "post_cate-prop",
+    "content": "**Vui lòng chọn loại BĐS phù hợp với danh mục bài viết!"
+},
+{
+    "id": 47,
+    "is_true": false,
+    "for": "edit",
+    "content": "editing"
+},
+{
+    "id": 48,
+    "is_true": true,
+    "for": "post_success",
+    "content": "Bài viết đã được cập nhật thành công!"
+},
+{
+    "id": 49,
+    "is_true": true,
+    "for": "restrict",
+    "content": "Hạn chế quyền thành công!"
+},
+{
+    "id": 50,
+    "is_true": false,
+    "for": "restrict",
+    "content": "**Vui lòng chọn ngày kết thúc hợp lệ!"
+}
+]

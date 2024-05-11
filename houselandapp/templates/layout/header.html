@@ -1,0 +1,119 @@
+<header>
+    <div class="main-menu">
+        <img src="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076219/FlightMangement/logo_komha6.png"
+            alt="logo">
+
+        <div class="menu">
+            <ul class="flex menu-items">
+                <li class="mr-2">
+                    <form method="get" class="d-flex justify-content-center h-100 " id="search-form" autocomplete="on">
+                        <div class="searchbar d-flex justify-content-between align-items-center">                            
+                            {% if parameters['issales'] == 'true' %}
+                            <select class="selectpicker" id="issales">
+                                <option selected value="true">Cần mua</option>
+                                <option value="false">Cần thuê</option>
+                            </select>
+                            {%else%}
+                            <select class="selectpicker" id="issales">
+                                <option value="true">Cần mua</option>
+                                <option selected value="false">Cần thuê</option>
+                            </select>
+                            {%endif%}
+
+                            {% if parameters['q'] %}
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..." value="{{parameters['q']}}">
+                            {%else%}
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..." value="">
+                            {%endif%}
+                            <a href="#" id="search_btn" class="search_icon"><i class="fas fa-search"></i></a>
+                        </div>
+                    </form>
+                </li>
+                <li id="home">
+                    <a class="category" href="/">Trang chủ</a>
+                </li>
+                <li id="sales">
+                    <div class="btn-group dropright">
+                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Mua bán
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/sales/all">Tất cả</a></li>
+                            {% for c in sales_cate %}
+                            <li><a class="dropdown-item" href="/sales/{{c['id']}}">{{c.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li id="rents">
+                    <div class="btn-group dropright">
+                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Cho thuê
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/rents/all">Tất cả</a></li>
+                            {% for c in rent_cate %}
+                            <li><a class="dropdown-item" href="/rents/{{c['id']}}">{{c.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li id="contact">
+                    <a class="category" href="#">Liên hệ</a>
+                </li>
+                <li>
+                    <div class="user">
+                        {% if current_user.is_authenticated %}
+                        <a class="category" href="/profile/{{current_user_id}}"><i class="fas fa-user"></i></a>
+                        <div class="flex menu-user">
+                            <div class="flex" id="profile">
+                                <a class="category" href="/profile/{{current_user_id}}">Hồ sơ</a>
+                            </div>
+                            <div>
+                                <span>/</span>
+                            </div>
+                            <div class="flex logout">
+                                <a class="category" href="/logout">Đăng xuất</a>
+                            </div>
+                        </div>
+                        {% else %}
+                        <a class="category" href="#"><i class="fas fa-user"></i></a>
+                        <div class="flex menu-user">
+                            <div class="flex">
+                                <a class="category" href="/login_register">Đăng ký</a>
+                            </div>
+                            <div>
+                                <span>/</span>
+                            </div>
+                            <div class="flex" id="login">
+                                <a class="category" href="/login_register">Đăng nhập</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="d-flex Slogan">
+        <div class="flex Slogan-text">
+            <p>
+                Afforda hỗ trợ môi giới toàn quốc. <br>  Khám phá ngay!
+            </p>
+        </div>
+
+        <div class="flex Slogan-btn">
+            <div class="out-line">
+                <div class="in-line">
+                    {% if current_user.is_authenticated %}
+                    <a href="/post" target="_self">Đăng tin ngay!</a>
+                    {% else %}
+                    <a href="/login_register?next=/post" target="_self">Đăng tin ngay!</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+</header>

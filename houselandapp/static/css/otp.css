@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+:root {
+  --error: #e41749;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4070f4;
+    flex-direction: column;
+    gap: 20px;
+}
+
+a {
+ text-decoration: none;
+ color: #fff;
+}
+
+:where(.container, form, .input-field, header) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    background: #fff;
+    padding: 30px 65px;
+    border-radius: 12px;
+    row-gap: 20px;
+    box-shadow: 0 5px 10px rbga(0, 0, 0, 0.1);
+}
+
+.container header {
+    height: 65px;
+    width: 65px;
+    background: #4070f4;
+    color: #fff;
+    font-size: 2.5rem;
+    border-radius: 50%;
+}
+
+.container h4 {
+    font-size: 1.25rem;
+    color: #333;
+    font-weight: 500;
+}
+
+form .input-field {
+    flex-direction: row;
+    column-gap:10px;
+}
+
+.input-field input {
+    height: 45px;
+    width: 42px;
+    border-radius: 6px;
+    outline:none;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.input-field input::-webkit-inner-spin-button,
+.input-field input::-webkit-outer-spin-button {
+    display: none;
+}
+
+form button {
+    margin-top: 25px;
+    width: 100%;
+    background: #6e93f7;
+    color: #fff;
+    font-size: 1rem;
+    border: none;
+    padding: 9px 0;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+form button.active {
+    background: #4070f4;
+    pointer-events: auto;
+    border: 1px solid #4070f4;
+    color:white;
+}
+
+form button[name="back"]:hover {
+    background: #0e4bf1;
+}
+
+.alert {
+  min-height: 67px;
+  width: 560px;
+  max-width: 90%;
+  border-radius: 12px;
+  padding: 16px 22px 17px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.alert-error {
+  background: var(--error);
+}
+.alert .icon__wrapper {
+  height: 34px;
+  width: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.253);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alert .icon__wrapper span {
+  font-size: 21px;
+  color: #fff;
+}
+.alert p {
+  color: #fff;
+  font-family: Verdana;
+  margin-left: 10px;
+}
+
+.verify {
+  background-color: white;
+  color: #141E30;
+  border: 1px solid;
+}

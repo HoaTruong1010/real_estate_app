@@ -1,0 +1,210 @@
+:root {
+  --main-color: #6dbfe2;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Monospace", sans-serif;
+}
+
+.body {
+  font-size: 10px;
+  font-family: monospace;
+}
+
+section {
+  margin-top: 50px;
+}
+
+.container {
+  margin: 2.5rem auto;
+  padding: 0 0.75rem;
+}
+
+ul {
+  list-style-type: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/*.container {
+    height: 100%;
+}*/
+
+/* --------header --------*/
+
+header {
+  background: url("https://res.cloudinary.com/doaux2ndg/image/upload/v1670076220/FlightMangement/nhaTrang_lwglis.jpg");
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+}
+
+/*----- Slogan-header ----- */
+@font-face {
+  font-family: Slogan1;
+  src: url(/static/font/Lora-Regular.ttf);
+}
+
+.Slogan {
+  height: calc(100% - 87px);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.Slogan-text {
+  width: 70%;
+}
+
+.Slogan-text p {
+  font-family: Slogan;
+  width: 80%;
+  color: paleturquoise;
+  font-size: 75px;
+}
+
+.Slogan-btn {
+  width: 30%;
+  z-index: 500;
+  animation: btn 5s ease-in-out infinite alternate;
+}
+
+.in-line {
+  background: skyblue;
+  margin: 2.5%;
+  position: relative;
+  overflow: hidden;
+}
+
+.in-line a {
+  color: darkcyan;
+  font-weight: 500;
+  display: block;
+  padding: 15px 20px;
+  font-size: 19px;
+  font-family: Slogan1;
+}
+
+.in-line::before {
+  content: "";
+  width: 120%;
+  height: 100%;
+  background: teal;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: skewX(-35deg) translateX(-120%);
+  transition: transform 0.5s ease-out;
+}
+
+.out-line {
+  border: 1px solid silver;
+  width: 70%;
+}
+
+.out-line:hover .in-line::before {
+  transform: skewX(-35deg) translateX(-10%);
+}
+
+.out-line:hover a {
+  color: lightcyan;
+  position: relative;
+  z-index: 999;
+}
+
+@keyframes btn {
+  0%,
+  100% {
+    transform: translateY(10%);
+  }
+  50% {
+    transform: translateY(-10%);
+  }
+}
+
+.searchbar {
+  height:40px;
+  background-color: white;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.search_input {
+  color: #646464 !important;
+  border: 0 !important;
+  outline: 0;
+  background: none;
+  line-height: 22px;
+  padding: 0 10px;
+  margin: 10px 0 10px 0;
+  width: 68%;
+  font-size: 15px;
+}
+.search_icon {
+  height: 25px;
+  width: 40px;
+  float: right;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  color: #17a2b8;
+  text-decoration: none;
+  margin-right: 10px;
+}
+.search_icon:hover {
+  text-decoration: none;
+  color: 17a2b8;
+}
+
+button[title="Cần mua"],
+button[title="Cần thuê"] {
+  height: 100% !important;
+  border-radius: 5px 0 0 5px;
+  background-color: #f0f0f0 !important;
+  display: block;
+  padding: 5px 10px !important;
+  font-size: 15px !important;
+  letter-spacing: 1px !important;
+  color: #646464 !important;
+}
+button[title="Cần mua"]:hover,
+button[title="Cần thuê"]:hover {
+  height: 100% !important;
+  border-radius: 5px 0 0 5px !important;
+  background-color: rgb(218, 218, 218) !important;
+  display: block;
+  font-size: 15px;
+  letter-spacing: 1px !important;
+  color: #646464 !important;
+}
+
+#search-form {
+  width: 100%;
+}
+
+.bootstrap-select {
+  width: 100px !important;
+  height: 100% !important;
+}
+
+form .dropdown-menu {
+  max-height: 200px;
+  overflow: auto;
+}

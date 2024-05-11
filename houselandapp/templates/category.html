@@ -1,0 +1,400 @@
+{% extends 'layout/base.html'%}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/category.css') }}">
+{% endblock %}
+
+{% block content%}
+
+<section class="handbook">
+    <div class="title">
+        <h2 style="text-transform: uppercase;">{{category_detail_parameters['category_name']}}</h2>
+    </div>
+
+    {% if length > 0 %}
+    <div class="d-flex justify-content-between mb-4">
+        <div class="handbook-content" style="margin-top: 50px; width: 70%;">
+            <div class="d-flex justify-content-start" style="position: relative;">
+                <div class="col-md-4 my-auto py-3" style="padding-left: 0 !important;">
+                    <div id="select-wrapper-101603" class="select-wrapper">
+                        <div class="form-outline">
+                            <form method="get" id="sort-form">
+                                <input class="form-control select-input" type="text" role="listbox"
+                                    aria-multiselectable="false" aria-disabled="false" aria-haspopup="true"
+                                    value="Mặc định" aria-expanded="false" readonly="" name="sort"><label
+                                    class="form-label select-label active" style="margin-left: 0px;">Sắp
+                                    xếp</label><span class="select-arrow"></span>
+                                <div class="form-notch">
+                                    <div class="form-notch-leading" style="width: 9px;"></div>
+                                    <div class="form-notch-middle" style="width: 50px;"></div>
+                                    <div class="form-notch-trailing"></div>
+                                </div>
+                            </form>
+                        </div>
+                        <select class="select initialized" id="sort-select">
+                            <option value="1">Best rating</option>
+                            <option value="2">Lowest price first</option>
+                            <option value="3">Highest price first</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="select-dropdown-container col-md-4" id="select-dropdown-container-60853"
+                    style="position: absolute; transform: translate3d(0px, 52px, 0px); top: 0px; left: 0px; will-change: transform; padding-left: 0;"
+                    x-placement="bottom-start">
+                    <div tabindex="0" class="select-dropdown open">
+                        <div class="select-options-wrapper" style="max-height: 240px;">
+                            <div class="select-options-list">
+                                <div class="select-option selected active" data-id="option-133255" role="option"
+                                    aria-selected="false" aria-disabled="false" selected="false"><span
+                                        class="select-option-text">Mặc định</span></div>
+                                <div class="select-option" data-id="option-133255" role="option" aria-selected="false"
+                                    aria-disabled="false" selected="false"><span class="select-option-text">Giá giảm
+                                        dần</span></div>
+                                <div class="select-option" data-id="option-24657" role="option" aria-selected="true"
+                                    aria-disabled="false" selected="true"><span class="select-option-text">Giá tăng
+                                        dần</span></div>
+                                <div class="select-option" data-id="option-961002" role="option" aria-selected="false"
+                                    aria-disabled="false"><span class="select-option-text">Diện tích giảm dần</span>
+                                </div>
+                                <div class="select-option" data-id="option-961002" role="option" aria-selected="false"
+                                    aria-disabled="false"><span class="select-option-text">Diện tích tăng dần</span>
+                                </div>
+                                {%if category_detail_parameters['category_id'] != 'DMD00' and
+                                category_detail_parameters['category_id'] != 'DMVP0' %}
+                                <div class="select-option" data-id="option-961002" role="option" aria-selected="false"
+                                    aria-disabled="false"><span class="select-option-text">Số
+                                        phòng ngủ giảm dần</span>
+                                </div>
+                                <div class="select-option" data-id="option-961002" role="option" aria-selected="false"
+                                    aria-disabled="false"><span class="select-option-text">Số
+                                        phòng ngủ tăng dần</span>
+                                </div>
+                                {%endif%}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap justify-content-between handbook-items" id="handbook-items"
+                style="width: 100%;">
+                {% for p in results %}
+                <div class="flex1 handbook-item" style="width: 100% !important;">
+                    <div class="col30 handbook-img item{{p['id']}}-c3 flex" id="{{p['id']}}">
+                        <img class="img" src="{{p['image']}}" alt="Represent Image" />
+                    </div>
+                    <div class="col70 handbook-info item-c7">
+                        <p class="overflow" style="color: blue; font-size: 12px; height: 28px;"><i
+                                class='fas fa-map-marker-alt'> </i>
+                            <span class="p-a">{{p['address']}}</span>
+                        </p>
+                        <h3 class="overflow" style="font-size:15px;">{{p['title']}}</h3>
+                        <div class="d-flex justify-content-start" style="gap: 10px;">
+                            <p class='date' style="font-size:13px;"><i class="fab fa-windows"></i> Diện tích:
+                                {{"{:,}".format(p['area'])}}
+                                m<sup>2</sup></p>
+                            {%if p.bedrooms != '0 phòng ngủ'%}
+                            <p>-</span>
+                            <p style="font-size: 13px; margin-bottom:0px; color: grey; left: 0;">
+                                <i class="fas fa-bed"></i> <span class="publish_date">{{p['bedrooms']}}</span>
+                            </p>
+                            {%endif%}
+                        </div>
+                        <p class='date' style="color: red;font-size:13px;"><i class="fas fa-dollar-sign"></i>
+                            <span class="display-price">Giá: {{p['price']}}</span>
+                        </p>
+                        <a class="btn btn-primary" href="/posts/{{p['id']}}"
+                            style="font-size: 13px; width: 100px; height: 30px; margin-top: 10px; line-height: 15px;">
+                            Xem chi tiết
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="border-left" style="width: 29%; margin-top: 50px; padding-left: 10px;">
+            <div class="py-3">
+                <h5><i class="fas fa-filter"></i> Lọc</h5>
+            </div>
+            <div class="py-1">
+                <h6>Địa chỉ</h6>
+                <form class="autocomplete" id="location-form" method="get">
+                    <input type="text" class="d-none" id="latlon" placeholder="Nhập địa chỉ..." disabled >
+                    <div class="d-flex justify-content-start" id="div__location">
+                        <input type="text" id="location" placeholder="Nhập địa chỉ..." autocomplete="off">
+                        <button type="button"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="autocomplete-items" id="autocompleteItems">
+                    </div>
+                </form>
+            </div>
+
+            <div class="mt-4">
+                <h6>Giá</h6>
+                <form id="price-form" method="get">
+                    <div class="d-flex justify-content-between">
+                        <span class="price-value w-50">{{category_detail_parameters['min_price']}} VNĐ</span>
+                        <span class="price-value w-50 text-end">{{category_detail_parameters['max_price']}}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="slider slider-price w-100">
+                            <div class="progress"></div>
+                            <div class="range-input input-price">
+                                <input type="range" class="range-min" name="min-price" min="0" max="200" step="1"
+                                    value="{{category_detail_parameters['min_price']}}">
+                                <input type="range" class="range-max" name="max-price" min="0" max="200" step="1"
+                                    value="{{category_detail_parameters['chose_max_price']}}">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="mt-4">
+                <h6>Diện tích</h6>
+                <div class="d-flex justify-content-between">
+                    <div><span class="area-value w-50">{{category_detail_parameters['min_area']}} </span><span>
+                            m<sup>2</sup></span></div>
+                    <div><span class="area-value w-50 text-end">{{category_detail_parameters['max_area']}} </span><span>
+                            m<sup>2</sup></span></div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="slider slider-area w-100">
+                        <div class="progress"></div>
+                        <div class="range-input input-area">
+                            <input type="range" class="range-min" name="min-area" min="0" max="200" step="1"
+                                value="{{category_detail_parameters['min_area']}}">
+                            <input type="range" class="range-max" name="max-area" min="0" max="200" step="1"
+                                value="{{category_detail_parameters['chose_max_area']}}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {%if category_detail_parameters['category_id'].startswith('DM') %}
+            <div class="mt-4">
+                <h6>Loại hình bất động sản</h6>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="type-of" value="all" id="c01" checked>
+                    <label class="form-check-label p-a" for="c01">
+                        Tất cả
+                    </label>
+                </div>
+                {%for c in category_detail_parameters['categories'] %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="type-of" value="{{c.name}}" id="c{{c.id}}">
+                    <label class="form-check-label p-a" for="c{{c.id}}">
+                        {{c.name}}
+                    </label>
+                </div>
+                {%endfor%}
+            </div>
+            {%endif%}
+
+            {%if category_detail_parameters['category_id'] != 'DMD00' and category_detail_parameters['category_id'] !=
+            'DMVP0' %}
+            <div class="mt-4">
+                <h6>Số lượng phòng ngủ</h6>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bedrooms" id="pn0" value="0" checked>
+                    <label class="form-check-label" for="pn0">
+                        Tất cả
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bedrooms" id="pn1" value="1">
+                    <label class="form-check-label" for="pn1">
+                        1 phòng ngủ
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bedrooms" id="pn2" value="2">
+                    <label class="form-check-label" for="pn2">
+                        2 phòng ngủ
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bedrooms" id="pn3" value="3">
+                    <label class="form-check-label" for="pn3">
+                        3 phòng ngủ
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bedrooms" id="pn4" value="4">
+                    <label class="form-check-label" for="pn4">
+                        4 phòng ngủ
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="bedrooms" id="pn5" value="5">
+                    <label class="form-check-label" for="pn5">
+                        Từ 5 phòng ngủ
+                    </label>
+                </div>
+            </div>
+            {%endif%}
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-danger mb-2" style="margin-top:50px;">
+        Không có bài viết nào được tìm thấy!
+    </div>
+    {%endif%}
+    {% if pages > 1 %}
+    <nav aria-label="Page navigation example mt-3">
+        <ul class="pagination justify-content-end">
+            {% if page > 1 %}
+            <li class="page-item">
+                <a class="page-link"
+                    href="/{{category_detail_parameters['issale']}}/{{category_detail_parameters['category_id']}}?page={{page-1}}"
+                    aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            {% for i in range(1, pages+1) %}
+            <li class="page-item number"><a class="page-link"
+                    href="/{{category_detail_parameters['issale']}}/{{category_detail_parameters['category_id']}}?page={{i}}">{{i}}</a>
+            </li>
+            {% endfor %}
+            {% if page+1 <= pages %} <li class="page-item">
+                <a class="page-link"
+                    href="/{{category_detail_parameters['issale']}}/{{category_detail_parameters['category_id']}}?page={{page+1}}"
+                    aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+                </li>
+                {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    {% if viewed_list %}
+    <div class="hint">
+        <h4 style="color: goldenrod;">Bài viết đã xem</h4>
+        <hr>
+        <div class="cards flex justify-content-start" style="flex-wrap: wrap;" id="cards">
+            {% for i in range(0, 4) %}
+            <div class="card hint-card">
+                <div class="card-image"><img class="card-img-top" src="{{viewed_list[i].images[0]}}"
+                        alt="Card image cap">
+                </div>
+                <div class="hint-address">
+                    <p><i class="fas fa-map-marker-alt"></i> {{viewed_list[i].address}}
+                    </p>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{viewed_list[i].title}}</h5>
+                    <p><i class="fab fa-windows"></i> <b>Diện tích:</b>
+                        {{"{:,}".format(viewed_list[i].area)}}
+                        m<sup>2</sup></p>
+                    <p><i class="fas fa-dollar-sign"></i> <b>Giá: </b> <span
+                            class="display-price">{{viewed_list[i].price}}</span>
+                    </p>
+                    <a href="/posts/{{viewed_list[i].id}}" class="btn btn-primary">Xem bài viết</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% if viewed_list.__len__() > 4 %}
+        <div class="w-100 d-flex justify-content-end"><a class="link-offset-2 link-underline link-underline-opacity-25"
+                style="width: 150px; text-underline-offset: 0.25em; font-weight: bold;"
+                href="/profile/{{current_user_id}}?viewed=true" aria-label="Previous">
+                Xem thêm <i class="fas fa-chevron-right"></i>
+            </a></div>
+
+        {%endif%}
+        <hr>
+    </div>
+    {%endif%}
+</section>
+
+{% endblock %}
+
+{%block js%}
+<script src="{{ url_for('static', filename='js/category.js') }}"></script>
+<script>
+
+    const cateId = `{{category_detail_parameters['category_id']}}`, moneyUnits = {
+        "VNĐ": 1, "nghìn đồng": 1000, "triệu đồng": 1000000, "tỷ đồng": 1000000000
+    }
+    function changePrice() {
+        const rangeInputs = document.querySelectorAll('.input-price input'),
+            progress = document.querySelector('.slider-price .progress'),
+            valSpan = document.querySelectorAll(".price-value");
+        var issales = location.href.split("/").reverse()[1], step;
+        let maxPriceStr = `{{category_detail_parameters['max_price']}}`;
+        let maxPriceSplit = maxPriceStr.split(" "), maxPrice;
+        let minVal = parseFloat(rangeInputs[0].value),
+            maxVal = parseFloat(rangeInputs[1].value);
+        if (maxPriceSplit.length > 1) {
+            let unit = maxPriceSplit[1] + " " + maxPriceSplit[2]
+            maxPrice = parseFloat(maxPriceSplit[0]) * moneyUnits[unit];
+        }
+        else {
+            maxPrice = parseFloat(maxPriceSplit[0]) * moneyUnits[maxPriceSplit[1]];
+        }
+
+        step = maxPrice / 200;
+        valSpan[0].textContent = compactMoney(minVal * step);
+        valSpan[1].textContent = compactMoney(maxVal * step);
+        progress.style.left = (minVal / rangeInputs[0].max) * 100 + "%";
+        progress.style.right = 100 - ((maxVal / rangeInputs[1].max) * 100) + "%";
+
+        rangeInputs.forEach(input => {
+            input.addEventListener("input", (event) => {
+                minVal = parseFloat(rangeInputs[0].value);
+                maxVal = parseFloat(rangeInputs[1].value);
+                if (maxVal - minVal < 1) {
+                    if (event.target.className == 'range-min') {
+                        rangeInputs[0].value = maxVal - 1;
+                    }
+                    else {
+                        rangeInputs[1].value = minVal + 1;
+                    }
+                }
+                else {
+                    valSpan[0].textContent = compactMoney(minVal * step);
+                    valSpan[1].textContent = compactMoney(maxVal * step);
+                    progress.style.left = (minVal / rangeInputs[0].max) * 100 + "%";
+                    progress.style.right = 100 - ((maxVal / rangeInputs[1].max) * 100) + "%";
+
+                }
+            });
+        });
+    }
+
+    function changeArea() {
+        const rangeInputs = document.querySelectorAll('.input-area input'),
+            progress = document.querySelector('.slider-area .progress'),
+            valSpan = document.querySelectorAll(".area-value");
+        var issales = location.href.split("/").reverse()[1];
+        let maxArea = parseFloat(`{{category_detail_parameters['max_area']}}`),
+            step = maxArea / 200, minVal = parseFloat(`{{category_detail_parameters['min_area']}}`),
+            maxVal = parseFloat(`{{category_detail_parameters['chose_max_area']}}`);
+        valSpan[0].textContent = (minVal * step).toFixed(1);
+        valSpan[1].textContent = (maxVal * step).toFixed(1);
+        progress.style.left = (minVal / rangeInputs[0].max) * 100 + "%";
+        progress.style.right = 100 - ((maxVal / rangeInputs[1].max) * 100) + "%";
+        rangeInputs.forEach(input => {
+            input.addEventListener("input", (event) => {
+                minVal = parseFloat(rangeInputs[0].value);
+                maxVal = parseFloat(rangeInputs[1].value);
+                if (maxVal - minVal < 1) {
+                    if (event.target.className == 'range-min') {
+                        rangeInputs[0].value = maxVal - 1;
+                    }
+                    else {
+                        rangeInputs[1].value = minVal + 1;
+                    }
+                }
+                else {
+                    valSpan[0].textContent = (minVal * step).toFixed(1);
+                    valSpan[1].textContent = (maxVal * step).toFixed(1);
+                    progress.style.left = (minVal / rangeInputs[0].max) * 100 + "%";
+                    progress.style.right = 100 - ((maxVal / rangeInputs[1].max) * 100) + "%";
+
+                }
+            });
+        });
+
+    }
+</script>
+{%endblock%}

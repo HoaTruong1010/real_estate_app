@@ -1,0 +1,607 @@
+{% extends "/layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edit_profile.css') }}">
+{% endblock %}
+
+{% block header %}
+<header>
+    <div class="main-menu">
+        <img src="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076219/FlightMangement/logo_komha6.png"
+            alt="logo">
+
+        <div class="menu">
+            <ul class="flex menu-items">
+                <li class="mr-2">
+                    <form method="get" class="d-flex justify-content-center h-100 " id="search-form" autocomplete="on">
+                        <div class="searchbar d-flex justify-content-between align-items-center">                            
+                            {% if parameters['issales'] == 'true' %}
+                            <select class="selectpicker" id="issales">
+                                <option selected value="true">Cần mua</option>
+                                <option value="false">Cần thuê</option>
+                            </select>
+                            {%else%}
+                            <select class="selectpicker" id="issales">
+                                <option value="true">Cần mua</option>
+                                <option selected value="false">Cần thuê</option>
+                            </select>
+                            {%endif%}
+
+                            {% if parameters['q'] %}
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..." value="{{parameters['q']}}">
+                            {%else%}
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..." value="">
+                            {%endif%}
+                            <a href="#" id="search_btn" class="search_icon"><i class="fas fa-search"></i></a>
+                        </div>
+                    </form>
+                </li>
+                <li id="home">
+                    <a class="category" href="/">Trang chủ</a>
+                </li>
+                <li id="sales">
+                    <div class="btn-group dropright">
+                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Mua bán
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/sales/all">Tất cả</a></li>
+                            {% for c in sales_cate %}
+                            <li><a class="dropdown-item" href="/sales/{{c['id']}}">{{c.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li id="rents">
+                    <div class="btn-group dropright">
+                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Cho thuê
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/rents/all">Tất cả</a></li>
+                            {% for c in rent_cate %}
+                            <li><a class="dropdown-item" href="/rents/{{c['id']}}">{{c.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li id="contact">
+                    <a class="category" href="#">Liên hệ</a>
+                </li>
+                <li>
+                    <div class="user">
+                        {% if current_user.is_authenticated %}
+                        <a class="category" href="/profile/{{current_user_id}}"><i class="fas fa-user"></i></a>
+                        <div class="flex menu-user">
+                            <div class="flex" id="profile">
+                                <a class="category" href="/profile/{{current_user_id}}">Hồ sơ</a>
+                            </div>
+                            <div>
+                                <span>/</span>
+                            </div>
+                            <div class="flex logout">
+                                <a class="category" href="/logout">Đăng xuất</a>
+                            </div>
+                        </div>
+                        {% else %}
+                        <a class="category" href="#"><i class="fas fa-user"></i></a>
+                        <div class="flex menu-user">
+                            <div class="flex">
+                                <a class="category" href="/login_register">Đăng ký</a>
+                            </div>
+                            <div>
+                                <span>/</span>
+                            </div>
+                            <div class="flex" id="login">
+                                <a class="category" href="/login_register">Đăng nhập</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</header>
+{% endblock %}
+{% block content %}
+
+{% if status['id'] == 15 or status['id'] == 23 or status['id'] == 27 or status['id'] == 49 %}
+<div class="alert alert-success" id="success">
+    {{status['content']}}
+</div>
+{% endif %}
+{% if status['id'] == 9 %}
+<div class="alert alert-danger" id="failed">
+    {{status['content']}}
+</div>
+{% endif %}
+
+{% if current_user.is_authenticated %}
+<section class="row">
+    <div class="title col-md-12">
+        <h2>Quản lý tài khoản</h2>
+    </div>
+    <form class="col-4" method="post" enctype="multipart/form-data">
+        <div class="card" style="width: 15rem;">
+            <div class="card text-white">
+                <img class="card-img-top" src="{{user.avatar}}" alt="Card image">
+                {% if user.id != current_user.id %}
+                <div></div>
+                {%else%}
+                <div class="card-img-overlay">
+                    <div class="card-title">
+                        <button name="delete-avatar" type="submit" class="btn btn-secondary card-title"
+                            style="width: 40px; height:40px;"></button>
+                        <button name="delete-avatar-btn" class="btn btn-danger card-title"
+                            style="width: 40px; height:40px;" type="button">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="card-title">
+                        <input name="edit-avatar" type="file" class="btn btn-secondary card-title"
+                            style="width: 40px; height:40px;" accept="image/*" />
+                        <button type="submit" class="edit-avatar" name="edit-avatar-btn"> <i
+                                class="fas fa-pen"></i></button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if current_user.id != user.id %}
+                <h5 class="card-title">{{user.name}}</h5>
+                <p>{{user.phone}}</p>
+                {%else%}
+                <h5 class="card-title">Ảnh đại diện</h5>
+                {%endif%}
+            </div>
+        </div>
+    </form>
+    <div class="col-8">
+
+        {% if current_user.id != user.id %}
+        {% if current_user.user_role == admin %}
+        <form method="post" class="form-group" id="restrict-form">
+            <div class="form-row">
+                <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px; margin: 5% 0;">Hạn chế quyền đăng bài viết
+                </h4>
+            </div>
+            <div class="form-row">
+                <div class="col-md-6">
+                    <label for="start">Từ: <span style="color:red">*</span></label>
+                    <input type="datetime-local" class="form-control" value="{{identifier.restrict_from}}" id="start" required name="start">
+                </div>
+                <div class="col-md-6">
+                    <label for="end">Đến: <span style="color:red">*</span> </label>
+                    <input type="datetime-local" class="form-control" value="{{identifier.restrict_to}}" id="end" required name="end">
+
+                    {% if status['id'] == 50%}
+                    <div class="invalid-feedback" id="failed">
+                        {{status['content']}}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <button style="height: 40px; width: 130px; margin: 20px auto;" class="btn btn-primary" name="restrict"
+                type="submit">Lưu thay đổi
+            </button>
+        </form>
+        <form method="post" class="form-group" id="contact-form">
+            <div class="form-row">
+                <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px; margin: 5% 0;">Thông tin liên hệ
+                </h4>
+            </div>
+            <div class="form-row">
+                <div class="col-md-8">
+                    <label for="email">Email: <span style="color:red">*</span></label>
+                    <input type="email" class="form-control" id="email" value="{{user.email}}" required name="email">
+
+                    {% if status['id'] == 6 or status['id'] == 14 %}
+                    <div class="invalid-feedback" id="failed">
+                        {{status['content']}}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label for="phone">Số điện thoại: <span style="color:red">*</span> </label>
+                    <input type="number" class="form-control" id="phone" value="{{user.phone}}" required name="phone">
+
+                    {% if status['id'] == 8 or status['id'] == 2 %}
+                    <div class="invalid-feedback" id="failed">
+                        {{status['content']}}
+                    </div>
+                    {% endif %}
+                </div>
+                {% if status['id'] == 25 %}
+                <div class="invalid-feedback mb-3" id="failed">
+                    {{status['content']}}
+                </div>
+                {% endif %}
+            </div>
+            <button style="height: 40px; width: 130px; margin: 20px auto;" class="btn btn-primary" name="change-contact"
+                type="submit">Lưu thay đổi
+            </button>
+        </form>
+        {%endif%}
+        {%else%}
+        <form method="post" class="form-group" style=" margin:0 auto;" id="infor-form" method="post">
+            <div class="form-row">
+                <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px;">Thông tin cá nhân</h4>
+            </div>
+            <div class="form-row">
+                <div class="col-md-12">
+                    <label for="name">Họ và tên: </label>
+                    {% if user.name %}
+                    <input type="text" class="form-control" id="name" value="{{user.name}}" name="name">
+                    {% else %}
+                    <input type="text" class="form-control" id="name" placeholder="Nhập tên của bạn..." name="name">
+                    {% endif %}
+                    {% if status['id'] == 5 %}
+                    <div class="invalid-feedback" id="failed">
+                        {{status['content']}}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-row justify-content-between">
+                <div class="col-md-12 mb-3">
+                    <div id="div-province">
+                        <label>Khu vực hoạt động:</label>
+                        <select name="province" class="form-control" id="province">
+                            {% if user.city %}
+                            <option value="{{user.city}}">{{user.city}}</option>
+                            {% else %}
+                            <option value="">Chọn khu vực</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-md-12 mb-3" style="margin: 0% 1%;">
+                        <label for="description">Mô tả bản thân: </label>
+                        {% block description %}
+                        {% if user.description %}
+                        <textarea class="form-control" id="description" rows="5" cols="100"
+                            name="description">{{user.description}}</textarea>
+                        {%else%}
+                        <textarea class="form-control" placeholder="Viết vài dòng giới thiệu bản thân..."
+                            id="description" rows="5" cols="100" name="description"></textarea>
+                        {%endif%}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+
+            <button style="height: 40px; width: 130px; margin: 20px auto;" class="btn btn-primary" name="change-info"
+                type="submit">Lưu thay đổi
+            </button>
+        </form>
+        <form method="post" class="form-group" id="contact-form">
+            <div class="form-row">
+                <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px; margin: 5% 0;">Thông tin liên hệ
+                </h4>
+            </div>
+            <div class="form-row">
+                <div class="col-md-8">
+                    <label for="email">Email: <span style="color:red">*</span></label>
+                    {% if user.email %}
+                    <input type="email" class="form-control disabled" id="email" value="{{user.email}}" disabled
+                        name="email">
+                    {% else %}
+                    <input type="email" class="form-control disabled" id="email" placeholder="Nhập email của bạn..."
+                        name="email">
+                    {%endif%}
+                    {% if status['id'] == 6 or status['id'] == 14 %}
+                    <div class="invalid-feedback" id="failed">
+                        {{status['content']}}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-4">
+                    <label for="phone">Số điện thoại: <span style="color:red">*</span> </label>
+                    {% if user.phone %}
+                    <input type="number" class="form-control disabled" id="phone" value="{{user.phone}}" disabled
+                        name="phone">
+                    {% else %}
+                    <input type="number" class="form-control disabled" id="phone" multiple name="phone"
+                        placeholder="Nhập số điện thoại...">
+                    {% endif %}
+
+                    {% if status['id'] == 8 or status['id'] == 2 %}
+                    <div class="invalid-feedback" id="failed">
+                        {{status['content']}}
+                    </div>
+                    {% endif %}
+                </div>
+                {% if status['id'] == 25 %}
+                <div class="invalid-feedback mb-3" id="failed">
+                    {{status['content']}}
+                </div>
+                {% endif %}
+            </div>
+        </form>
+        <form method="post" class="form-group" id="account-form">
+            <div class="form-row">
+                <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px; margin: 5% 0;">Thông tin tài
+                    khoản</h4>
+            </div>
+            <div class="form-row">
+                <div class="col-md-8">
+                    <label for="old-password">Mật khẩu hiện tại: </label>
+                    <input type="password" class="form-control" id="old-password" name="old-password" required>
+                </div>
+                <div class="col-md-4">
+                    <a href="/login_register/forgot_password" id="forgot">Quên mật khẩu</a>
+                </div>
+                {% if status['id'] == 16 %}
+                <div class="invalid-feedback mb-3" id="failed">
+                    {{status['content']}}
+                </div>
+                {% endif %}
+                <div class="col-md-8 mb-3">
+                    <label for="new-password">Mật khẩu mới: </label>
+                    <input type="password" class="form-control" id="new-password" name="new-password" required>
+                </div>
+                {% if status['id'] == 17 %}
+                <div class="invalid-feedback mb-3" id="failed">
+                    {{status['content']}}
+                </div>
+                {% endif %}
+                <div class="col-md-8 mb-3">
+                    <label for="re-new-password">Nhập lại mật khẩu mới: </label>
+                    <input type="password" class="form-control" id="re-new-password" name="re-new-password" required>
+                </div>
+                {% if status['id'] == 18 %}
+                <div class="invalid-feedback mb-3" id="failed">
+                    {{status['content']}}
+                </div>
+                {% endif %}
+            </div>
+            <div id="message" style="margin-left: 3%;">
+                <h6>Password must contain the following:</h6>
+                <p id="letter" class="invalid">A <b>lowercase</b> letter</p>
+                <p id="capital" class="invalid">A <b>capital (uppercase)</b> letter</p>
+                <p id="number" class="invalid">A <b>number</b></p>
+                <p id="length" class="invalid">Minimum <b>8 characters</b></p>
+            </div>
+            <button style="height: 40px; width: 130px; margin: 20px auto;" class="btn btn-primary"
+                name="change-password" type="submit">Lưu thay đổi
+            </button>
+            <button name="delete-account" class="btn btn-danger row" style="height: 40px; width: 15rem; margin: 0 3%;">
+                <span class="col-9">Yêu cầu xóa tài khoản</span>
+            </button>
+
+        </form>
+        {%endif%}
+        <form class="form-group" style=" margin:0 auto; " method="post" enctype="multipart/form-data">
+            <div class="form-row">
+                <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px; margin: 5% 0 2% 0;">Đăng ký trở
+                    thành
+                    nhà môi giới</h4>
+            </div>
+            {% if user_role != "UserRoleEnum.USER" %}
+            {% if user.user_role == half_publisher %}
+            <p style="color: rgb(20, 158, 250); font-weight: 500;"><span>* Tình trạng: Hồ sơ đang chờ duyệt!</span>
+            </p>
+            {% else %}
+            <p style="color: green; font-weight: 500;"><span>* Tình trạng: Hồ sơ đã được duyệt!</span>
+            </p>
+            {% endif %}
+            <div class="col-md-12 mb-3 d-flex justify-content-center">
+                <div class="col-md-6">
+                    <label class="label-center" for="selfie-image">Ảnh chụp chân dung:</label>
+                    <img src="{{url_for('static', filename='uploads/'+id+'_S.jpg')}}" class="center" alt=""
+                        style="width: 75%;">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-md-6 mb-3">
+                    <label class="label-center" for="front-id-image">Ảnh chụp CCCD mặt trước: </label>
+                    <img src="{{url_for('static', filename='uploads/'+id+'_F.jpg')}}" class="center" alt="">
+
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="label-center" for="back-id-image">Ảnh chụp CCCD mặt sau: </label>
+                    <img src="{{url_for('static', filename='uploads/'+id+'_B.jpg')}}" class="center" alt="myimagr">
+                </div>
+            </div>
+            {% if current_user.user_role == admin %}
+            <div class="form-row">
+                <div class="col-md-8">
+                    <label for="r_name">Họ và tên: </label>
+                    <input type="text" class="form-control" id="name" required value="{{ifull_name}}"
+                        name="r_name">
+                </div>
+                <div class="col-md-4">
+                    <label for="r_gender">Giới tính: </label>
+                    {%if identifier.gender %}
+                    <input type="text" class="form-control" value="Nữ" name="r_gender" required>
+                    {%else%}
+                    <input type="text" class="form-control" value="Nam" name="r_gender" required>
+                    {%endif%}
+                </div>
+                <div class="col-md-6 mt-2">
+                    <label for="r_dob">Ngày sinh: </label>
+                    <input type="text" class="form-control" value="{{identifier.dob}}" name="r_dob" required>
+                </div>
+                <div class="col-md-6 mt-2">
+                    <label for="r_id_code">Số CCCD/CMND: </label>
+                    <input type="text" class="form-control" value="{{iid_code}}" name="r_id_code" required>
+                </div>
+                <div class="col-md-12 mt-2">
+                    <label for="r_address">Địa chỉ: </label>
+                    <input type="text" class="form-control" value="{{identifier.address}}" name="r_address" required>
+                </div>
+
+                <div class="col-md-6 mt-2">
+                    <label for="r_register_date">Ngày cấp: </label>
+                    <input type="text" class="form-control" value="{{identifier.register_date}}" name="r_register_date"
+                        required>
+                </div>
+
+                <div class="col-md-6 mt-2">
+                    <label for="r_expire_date">Ngày hết hạn: </label>
+                    <input type="text" class="form-control" value="{{identifier.expire_at}}" name="r_expire_date"
+                        required>
+                </div>
+
+                <div class="col-md-12 mt-2">
+                    <label for="r_at">Nơi cấp: </label>
+                    <input type="text" class="form-control" value="{{identifier.at}}" name="r_at" required>
+                </div>
+
+                <div class="col-md-12 mt-2">
+                    <label for="r_expire_date">Ngày duyệt hồ sơ: </label>
+                    <p class="form-control" >{{identifier.accept_at}}</p>
+                </div>
+            </div>
+            {%endif%}
+            {%if current_user.user_role == admin and user.user_role == half_publisher%}
+            <button style="height: 40px; width: 130px; margin: 20px auto;" name="cancel" class="btn btn-danger"
+                type="submit">Từ chối
+            </button>
+            <button style="height: 40px; width: 130px; margin: 20px auto;" name="accept" class="btn btn-primary"
+                type="submit">Duyệt
+            </button>
+            {% elif user_role == half_publisher %}
+            <button style="height: 40px; width: 130px; margin: 20px auto;" name="cancel" class="btn btn-danger"
+                type="submit">Hủy đăng ký
+            </button>
+            {% elif current_user.user_role == admin %}
+            <button style="height: 40px; width: 130px; margin: 20px auto;" name="cancel" class="btn btn-danger"
+                type="submit">Hủy đăng ký
+            </button>
+            {% endif %}
+            {% else %}
+            <div class="form-row">
+                <div class="notice">
+                    <h6 class="warning-title" type="primary">Để đăng ký trở thành nhà môi giới, bạn
+                        cần thực hiện theo các bước sau:</h6>
+                    <div class="warning-content">
+                        <div class="step">1</div>
+                        <div class="step-content" type="primary">Cung cấp các thông tin cá nhân, đảm
+                            bảo chính xác và rõ ràng về bạn</div>
+                    </div>
+                    <div class="warning-content">
+                        <div class="step">2</div>
+                        <div class="step-content" type="primary">Sau khi hoàn tất, ấn nút “Đăng ký”
+                        </div>
+                    </div>
+                    <div class="warning-content">
+                        <div class="step">3</div>
+                        <div class="step-content" type="primary">Nhận kết quả xét duyệt từ
+                            Afforda.com.vn sau 2 - 3 ngày làm việc</div>
+                    </div>
+                    <div class="step-content" type="primary">Lưu ý: sau khi trở thành nhà môi giới
+                        <br> • Tên và ảnh đại diện dùng để đăng ký trở thành nhà môi giới sẽ được áp dụng
+                        lên tất cả các tin đăng của bạn và hiển thị trên khắp website Afforda.com.vn <br>• Các
+                        thay đổi liên quan tới tất cả thông tin (ngoại trừ thông tin tài khoản) sẽ cần được
+                        Afforda.com.vn xét duyệt lại
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <p style="color: red;"><span>* Lưu ý: </span>Ảnh chụp CCCD không bị mất góc, đủ chi tiết và đủ ánh sáng!
+                </p>
+                <div class="col-md-12 mb-3 d-flex justify-content-center">
+                    <div class="col-md-6">
+                        <label for="back-id-image">Ảnh chụp chân dung: </label>
+                        <input type="file" class="form-control disabled" id="selfie-image" name="selfie-image"
+                            accept=".jpg, .jpeg, .png" required>
+                        {% if status['id'] == 19 %}
+                        <div class="invalid-feedback mb-3" id="failed">
+                            {{status['content']}}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="front-id-image">Ảnh chụp CCCD mặt trước: </label>
+                    <input type="file" class="form-control disabled" id="front-id-image" name="front-id-image"
+                        accept=".jpg, .jpeg, .png" required>
+                    {% if status['id'] == 20 or status['id'] == 29 %}
+                    <div class="invalid-feedback mb-3" id="failed">
+                        {{status['content']}}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="back-id-image">Ảnh chụp CCCD mặt sau: </label>
+                    <input type="file" class="form-control disabled" id="back-id-image" name="back-id-image"
+                        accept=".jpg, .jpeg, .png" required>
+                    {% if status['id'] == 21 or status['id'] == 22 %}
+                    <div class="invalid-feedback mb-3" id="failed">
+                        {{status['content']}}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% if status['id'] == 25 %}
+            <div class="invalid-feedback mb-3" id="failed">
+                {{status['content']}}
+            </div>
+            {% endif %}
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input disabled" type="checkbox" id="agree" required name="agree">
+                    <label class="form-check-label" for="agree">
+                        <div type="primary" class="sc-bqyKva kNPgPf">Tôi đồng ý với các <a target="_blank"
+                                href="https://trogiup.batdongsan.com.vn/docs/dieu-khoan-thoa-thuan"
+                                class="sc-krWZfr bPyFwg">Điều khoản sử dụng</a>, <a target="_blank"
+                                href="https://trogiup.batdongsan.com.vn/docs/chinh-sach-bao-mat"
+                                class="sc-krWZfr bPyFwg">Chính sách bảo mật</a>, <a target="_blank"
+                                href="https://trogiup.batdongsan.com.vn/docs/quy-che-hoat-dong"
+                                class="sc-krWZfr bPyFwg">Quy chế</a> và <a target="_blank"
+                                href="https://trogiup.batdongsan.com.vn" class="sc-krWZfr bPyFwg">Chính sách</a> của
+                            Afforda.com.vn. Tôi cam kết những nội dung nêu trên là đúng sự thật, nếu có xảy ra tranh
+                            chấp, khiếu nại tôi xin chịu hoàn toàn trách nhiệm.</div>
+                    </label>
+                    {% if status['id'] == 24 %}
+                    <div class="invalid-feedback mb-3" id="failed">
+                        {{status['content']}}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% block push %}
+            <button style="height: 40px; width: 130px; margin: 20px 0; display: block;" name="pre-register" class="btn btn-primary"
+                type="button">Đăng ký
+            </button>
+            <button style="height: 40px; width: 130px; margin: 20px auto; display: none;" name="register" class="btn btn-primary"
+                type="submit">Đăng ký
+            </button>
+            {% endblock %}
+            {% endif %}
+        </form>
+    </div>
+</section>
+{% else %}
+<p>Vui lòng <a href="/login_register?next=/profile/{{current_user_id}}">đăng nhập</a> để chỉnh sửa hồ sơ!</p>
+{% endif %}
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename='js/edit_profile.js') }}"></script>
+<script>
+    window.onload = function () {
+        let userRole = `{{user.user_role}}`;
+        if (userRole == "UserRoleEnum.HALF_PUBLISHER" || userRole == "UserRoleEnum.PUBLISHER") {
+            var disabledElements = document.querySelectorAll(".disabled");
+            disabledElements.forEach(element => {
+                element.setAttribute("disabled", "");
+            });
+        }
+        document.querySelector("button[name='cancel']").addEventListener("click", (e) => {
+            if (confirm("Bạn có chắc chắn hủy đăng ký trở thành nhà môi giới?") == false) {
+                e.preventDefault();
+            }
+        });
+    };
+
+</script>
+{% endblock %}

@@ -1,0 +1,465 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+* {
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+:root {
+    --linear-grad: linear-gradient(to right, #141E30, #243B55);
+    --grad-clr1: #141E30;
+    --grad-clr2: #243B55;
+}
+
+body {
+    height: 100vh;
+    background: #f6f5f7;
+    display: grid;
+    place-content: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+.flex {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+}
+
+.flex > a, .flex > p {
+    margin-top: 17px !important;
+}
+
+.container {
+    position:relative;
+    width: 850px;
+    height:500px;
+    background-color: #FFF;
+    box-shadow: 25px 30px 55px #5557;
+    border-radius:13px;
+    overflow:hidden;
+}
+
+.form-container {
+    position: absolute;
+    width: 60%;
+    height: 100%;
+    padding: 0px 40px;
+    transition: 0.6s ease-in-out;
+}
+
+.sign-up-container {
+    opacity:0;
+    z-index:1;
+}
+
+.sign-in-container {
+    z-index: 2;
+}
+
+form {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content:center;
+    padding: 0px 50px;
+}
+
+h1 {
+    color: var(--grad-clr1);
+    margin-bottom: 15px;
+    font-size: 2rem;
+}
+
+.social-container {
+    margin: 20px 0px;
+}
+
+.social-container a {
+    border: 1px solid #DDD;
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items:center;
+    margin: 0px 5px;
+    height: 40px;
+    width: 40px;
+}
+
+span {
+    font-size:12px;
+}
+
+.infield {
+    position: relative;
+    margin: 5% 0px;
+    width: 100%;
+}
+
+input:not(input[type='radio']) {
+    width: 100%;
+    padding:12px 15px;
+    background-color: #f3f3f3;
+    border: none;
+    outline: none;
+}
+
+.infield input[type='number']::-webkit-inner-spin-button,
+.infield input[type='number']::-webkit-outer-spin-button {
+    display: none;
+}
+
+label:not(label.form-check-label) {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    width: 0%;
+    height: 2px;
+    background: var(--linear-grad);
+    transition: 0.3s;
+}
+
+input:focus ~ label:not(label.form-check-label) {
+    width: 100%;
+}
+
+a.forgot {
+    padding-bottom: 3px;
+    border-bottom: 2px solid #EEE;
+    color:#333;
+    font-size: 14px;
+    margin: 15px 0px;
+}
+
+button {
+    border-radius: 20px;
+    border: 1px solid var(--grad-clr1);
+    background: var(--grad-clr2);
+    color:#FFF;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 12px 45px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 15px;
+}
+
+.form-container button {
+    margin-top: 17px;
+    transition: 80ms ease-in;
+}
+
+.overlay-container {
+    position: absolute;
+    top:0;
+    left: 60%;
+    width: 40%;
+    height: 100%;
+    overflow: hidden;
+    transition: transform 0.6s ease-in-out;
+    z-index: 9;
+}
+
+#overlayBtn {
+    cursor: pointer;
+    position: absolute;
+    left: 50%;
+    top:304px;
+    transform: translateX(-50%);
+    width: 143.67px;
+    height: 40px;
+    border: 1px solid #FFF;
+    background: transparent;
+    border-radius: 20px;
+}
+
+.overlay {
+    position: relative;
+    background: var(--linear-grad);
+    color: #FFF;
+    left: -150%;
+    height: 100%;
+    width: 250%;
+    transition: transform 0.6s ease-in-out;
+}
+
+.overlay-panel {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0px 40px;
+    text-align: center;
+    height: 100%;
+    width: 340px;
+    transition: 0.6s ease-in-out;
+}
+
+.overlay-panel img {
+    width: 87%;
+}
+
+.overlay-left {
+    right: 0;
+    transform: translateX(0%);
+}
+
+p {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 20px;
+    letter-spacing: 0.5px;
+    margin: 0px;
+}
+
+.overlay-panel button {
+    border: none;
+    background-color: transparent;
+    margin-top: 35px;
+}
+
+.right-panel-active .overlay-container {
+    transform: translateX(-150%);
+}
+
+.right-panel-active .overlay {
+    transform: translateX(50%);
+}
+
+.right-panel-active .overlay-left {
+    transform: translateX(25%);
+}
+
+.right-panel-active .overlay-right {
+    transform: translateX(25%);
+}
+
+.right-panel-active .sign-in-container {
+    transform: translateX(20%);
+    opacity: 0;
+}
+
+.right-panel-active .sign-up-container {
+    transform: translateX(66.7%);
+    opacity: 1;
+    z-index: 5;
+    animation: show 0.6s;
+ }
+
+ @keyframes show {
+    0%, 50% {
+        opacity: 0;
+        z-index: 1;
+    }
+    50.1%, 100% {
+        opacity:1;
+        z-index: 5;
+    }
+ }
+
+ .btnScaled {
+    animation: scaleBtn 0.6s;
+ }
+
+ @keyframes scaleBtn {
+    0% {
+        width: 143.67px;
+    }
+    50% {
+        width: 250px;
+    }
+    100% {
+        width: 143.67px;
+    }
+ }
+
+
+a {
+ text-decoration: none;
+}
+
+:where(header) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.container header {
+    height: 65px;
+    width: 65px;
+    background: #4070f4;
+    color: #fff;
+    font-size: 2.5rem;
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+.container h4 {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+    margin: 1rem 0;
+}
+
+.input-otp .input-field {
+    flex-direction: row;
+    column-gap:20px;
+}
+
+.input-field input {
+    height: 45px;
+    width: 42px !important;
+    border-radius: 6px;
+    outline:none;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.input-field input::-webkit-inner-spin-button,
+.input-field input::-webkit-outer-spin-button {
+    display: none;
+}
+
+button.verify {
+    border-radius: 20px;
+    border: 1px solid lightgrey;
+    color:#FFF;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 12px 45px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 15px;
+    background-color: lightgrey;
+}
+
+.active {
+    background: var(--grad-clr1) !important;
+    pointer-events: auto !important;
+}
+
+.alert {
+  min-height: 67px;
+  width: 100%;
+  border-radius: 12px;
+  padding: 16px 22px 17px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.alert-error {
+  background: var(--error);
+}
+.alert .icon__wrapper {
+  height: 34px;
+  width: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.253);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alert .icon__wrapper span {
+  font-size: 21px;
+  color: #fff;
+}
+.alert p {
+  color: #fff;
+  font-family: Verdana;
+  margin-left: 10px;
+}
+
+#back, button[name="cancel"] {
+  background-color: white;
+  color: #141E30;
+}
+
+.infield > p {
+    margin: 5px 0;
+}
+
+.valid {
+    color: green;
+    font-weight: 400;
+  }
+  
+  .valid:before {
+    position: relative;
+    left: -15px;
+    content: "✔";
+  }
+  
+  /* Add a red text color and an "x" when the requirements are wrong */
+  .invalid {
+    color: grey;
+  }
+  
+  .invalid:before {
+    position: relative;
+    left: -15px;
+    content: "✖";
+  }
+
+
+.sign-up-container > form {
+    position: relative;
+}
+
+.sign-up-container h1 {
+    position: absolute;
+    z-index: 1;
+    top: 7%;
+    right: 0;
+    left: -10%;
+    text-align: center;
+}
+
+#step-1 {
+    position: absolute;
+    opacity: 1;
+    right: 10%;
+    left: 5%;
+    z-index: 1;
+    transition: 0.6s ease-in-out;
+}
+
+
+#step-2 {
+    position: absolute;    
+    right: 10%;
+    left: 5%;
+    opacity: 0;
+    z-index: 0;
+    /* transition: all 0.6s ease-in-out; */
+    transform: translateX(120%);
+}
+
+#step-3 {
+    position: absolute;
+    opacity: 0;
+    z-index: -1;   
+    right: 10%;
+    left: 5%; 
+    transition: 0.6s ease-in-out;
+    transform: translateX(240%);
+}
+
+button.step-1 {
+    position: absolute;
+    right: 35%;
+    background-color: lightgrey;
+    border: 1px solid lightgrey;
+    transition: all 1s ease-in-out;
+
+}
+
+.form-inline {
+    display: inline-block; 
+    width: 59.5%;   
+}
+

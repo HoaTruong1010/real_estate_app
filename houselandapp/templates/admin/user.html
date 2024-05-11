@@ -1,0 +1,90 @@
+{% extends 'admin/model/list.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin-user.css') }}">
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+    integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+{% endblock %}
+
+{% block model_list_table%}
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+<div class="main-content">
+    <div class="container mt-2">
+        <div class="row">
+            <div class="col">
+                <div class="card shadow">
+                    <div class="card-header row border-0">
+                        <div class="col-md-8">
+                            <a id="all" href="javascript:" class="a-active mb-0 col-md-2">All</a>
+                            <a id="waiting-register" href="javascript:" class="mb-0 col-md-2 pin__parent">Chờ duyệt đăng
+                                ký nhà môi giới
+                                {% if new_requests[0] > 0 %} 
+                                <span class="badge text-danger badge-dot pin">
+                                    <i class="bg-danger pin__child"></i>
+                                </span>
+                                {%endif%}
+                            </a>
+                            <a id="waiting-delete" href="javascript:" class="mb-0 col-md-2 pin_parent">Chờ duyệt xóa tài
+                                khoản
+                                {% if new_requests[1] > 0 %} 
+                                <span class="badge text-danger badge-dot pin">
+                                    <i class="bg-danger pin__child"></i>
+                                </span>
+                                {%endif%}
+                            </a>
+                        </div>
+                        <div class="position-relative col-md-4">
+                            <span class="position-absolute search" style="line-height: 39px;"><i
+                                    class="fa fa-search"></i></span>
+                            <input id="search" type="text" class="form-control w-100" style="padding-left: 1.3rem;"
+                                placeholder="Nhập số điện thoại hoặc email...">
+                        </div>
+                    </div>
+                    <p class="col-md-12" style="text-align: start; font-weight: bold;">Tổng số: <span
+                            id="total">0</span></p>
+                    <div class="table-responsive">
+                        <table class="table align-items-center table-flush">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Action</th>
+                                    <th scope="col">Tên</th>
+                                    <th scope="col">Số điện thoại</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Vai trò</th>
+                                    <th scope="col">Kích hoạt</th>
+                                    <th scope="col">Ngày đăng ký</th>
+                                    <th scope="col">Tổng số báo cáo xấu</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody"></tbody>
+                        </table>
+                    </div>
+                    <div class="footer py-4">
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block tail %}
+<script src="{{ url_for('static', filename='js/admin_user.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"
+        integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    var socket = io.connect("http://" + document.domain + ":" + location.port);
+    const userBadge = `{{is_new_user}}`;
+    const postsBadge = parseInt(`{{stats[1]}}`);
+    const reportBadge = parseInt(`{{stats[4]}}`);
+    const chatBadge = parseInt(`{{new_chat}}`);
+    const currentUser = `{{current_user.id}}`;
+    window.onload = () => {
+        loadDataRows("all");
+    }
+</script>
+{% endblock %}

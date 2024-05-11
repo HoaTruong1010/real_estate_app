@@ -1,0 +1,464 @@
+{% if current_user.is_authenticated and current_user.user_role == publisher or current_user.user_role == admin %}
+{% extends "/layout/base.html" %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/post.css') }}">
+{% endblock %}
+
+{% block header %}
+<header>
+    <div class="main-menu">
+        <img src="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076219/FlightMangement/logo_komha6.png"
+            alt="logo">
+
+        <div class="menu">
+            <ul class="flex menu-items">
+                <li class="mr-2">
+                    <form method="get" class="d-flex justify-content-center h-100 " id="search-form" autocomplete="on">
+                        <div class="searchbar d-flex justify-content-between align-items-center">
+                            {% if parameters['issales'] == 'true' %}
+                            <select class="selectpicker" id="issales">
+                                <option selected value="true">Cần mua</option>
+                                <option value="false">Cần thuê</option>
+                            </select>
+                            {%else%}
+                            <select class="selectpicker" id="issales">
+                                <option value="true">Cần mua</option>
+                                <option selected value="false">Cần thuê</option>
+                            </select>
+                            {%endif%}
+
+                            {% if parameters['q'] %}
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..."
+                                value="{{parameters['q']}}">
+                            {%else%}
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..." value="">
+                            {%endif%}
+                            <a href="#" id="search_btn" class="search_icon"><i class="fas fa-search"></i></a>
+                        </div>
+                    </form>
+                </li>
+                <li id="home">
+                    <a class="category" href="/">Trang chủ</a>
+                </li>
+                <li id="sales">
+                    <div class="btn-group dropright">
+                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Mua bán
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/sales/all">Tất cả</a></li>
+                            {% for c in sales_cate %}
+                            <li><a class="dropdown-item" href="/sales/{{c['id']}}">{{c.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li id="rents">
+                    <div class="btn-group dropright">
+                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Cho thuê
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/rents/all">Tất cả</a></li>
+                            {% for c in rent_cate %}
+                            <li><a class="dropdown-item" href="/rents/{{c['id']}}">{{c.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li id="contact">
+                    <a class="category" href="#">Liên hệ</a>
+                </li>
+                <li>
+                    <div class="user">
+                        {% if current_user.is_authenticated %}
+                        <a class="category" href="/profile/{{current_user_id}}"><i class="fas fa-user"></i></a>
+                        <div class="flex menu-user">
+                            <div class="flex" id="profile">
+                                <a class="category" href="/profile/{{current_user_id}}">Hồ sơ</a>
+                            </div>
+                            <div>
+                                <span>/</span>
+                            </div>
+                            <div class="flex logout">
+                                <a class="category" href="/logout">Đăng xuất</a>
+                            </div>
+                        </div>
+                        {% else %}
+                        <a class="category" href="#"><i class="fas fa-user"></i></a>
+                        <div class="flex menu-user">
+                            <div class="flex">
+                                <a class="category" href="/login_register">Đăng ký</a>
+                            </div>
+                            <div>
+                                <span>/</span>
+                            </div>
+                            <div class="flex" id="login">
+                                <a class="category" href="/login_register">Đăng nhập</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</header>
+{% endblock %}
+
+{% block content %}
+<section class="handbook">
+    {% block h2 %}
+    <div class="title">
+        <h2>ĐĂNG TIN</h2>
+    </div>
+    {% endblock %}
+    {% if status['is_true']%}
+    <div class="alert alert-success" id="success">
+        {{status['content']}}
+    </div>
+    {% endif %}
+    {% if status['id'] == 9 %}
+    <div class="alert alert-danger" id="failed">
+        {{status['content']}}
+    </div>
+    {% endif %}
+
+    <form id="post-form" class="form-group col-md-8" style=" margin:0 auto;" method="post"
+        enctype="multipart/form-data">
+        {% if status['id'] != 47 and status['id'] != 48 %}
+        <div class="form-row">
+            <div class="col-md-12 mb-3">
+                <label for="category-post"><span style="color:red">*</span>Danh mục tin đăng: </label>
+                <select id="category-post" class="selectpicker" data-show-subtext="true" data-live-search="true"
+                    name="category">
+                    {% block selected%}
+                    {% endblock %}
+                    {% for c in rent_cate %}
+                    <option value="{{c.id}}" id="cate-r-{{c.id}}">{{c.name}}</option>
+                    {% endfor %}
+                </select>
+                <p id="err-msg-category" style="color: red;font-size: 10px;"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-12 mb-3 ">
+                <label for="category"><span style="color:red">*</span>Danh mục bất động sản: </label>
+                {% block issales %}
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="is_sale" id="btnradio1" value="yes" autocomplete="off"
+                        checked>
+                    <label class="btn btn-primary" for="btnradio1">Cần bán</label>
+
+                    <input type="radio" class="btn-check" name="is_sale" id="btnradio2" value="no" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="btnradio2">Cho thuê</label>
+                </div>
+                {% endblock %}
+                <p id="err-msg-issales" style="color: red;font-size: 10px;"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px; margin: 5% 0 2% 0;">Địa chỉ Bất động
+                sản</h4>
+        </div>
+        <div class="form-row">
+            <div class="col-md-12 mb-3">
+                {% block input_address %}
+                <input type="text" class="form-control" id="address" placeholder="Xem trước địa chỉ" value=""
+                    name="address" style="color: lightgrey; display: none;">
+                {% endblock %}
+                <input type="text" class="form-control" id="location" value="" name="location"
+                    style="color: lightgrey; display: none;">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-4 mb-3">
+                <label for="province">Tỉnh/Thành phố <span style="color:red">*</span> </label>
+                <div id="div-province">
+                    <select name="province" class="form-control" id="province" required>
+                        {% block province %}
+                        <option selected value="">----Chọn----</option>
+                        {% endblock %}
+                    </select>
+                </div>
+                <div class="invalid-feedback">
+                    Vui lòng chọn tỉnh/thành phố!
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="district">Quận/Huyện <span style="color:red">*</span> </label>
+                <div id="div-district">
+                    <select name="district" class="form-control" id="district" required>
+                        {% block district %}
+                        <option selected value="">----Chọn----</option>
+                        {% endblock %}
+                    </select>
+                </div>
+                <div class="invalid-feedback">
+                    Vui lòng chọn quận/huyện!
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="ward">Phường/Xã <span style="color:red">*</span> </label>
+                <div id="div-ward">
+                    <select name="ward" class="form-control" id="ward" required>
+                        {% block ward %}
+                        <option selected value="">----Chọn----</option>
+                        {% endblock %}
+                    </select>
+                </div>
+            </div>
+            <p id="err-msg-address" style="color: red;font-size: 10px;"></p>
+        </div>
+        <div class="form-row">
+            <div class="col-md-12 mb-3">
+                <label for="street">Địa chỉ cụ thể <span style="color:red">*</span> </label>
+                {% block street %}
+                <input type="text" class="form-control" id="street" placeholder="Nhập số nhà, tên đường, tên xóm,..."
+                    required name="street">
+                {% endblock %}
+                <p id="err-msg-street" style="color: red;font-size: 10px;"></p>
+            </div>
+        </div>
+
+        <label for="">Vị trí</label>
+        <div class="d-flex justify-content-center">
+            <div id="map" style="width: 600px; height: 400px;"></div>
+        </div>
+        <div class="form-row">
+            <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px; margin: 5% 0 2% 0;">Thông tin chi
+                tiết</h4>
+        </div>
+        <div class="form-row">
+            <div class="col-md-12 mb-3">
+                <label for="cate-prop">Loại hình BĐS <span style="color:red">*</span> </label>
+                <div>
+                    <select name="cate-prop" class="form-control" id="cate-prop" required>
+                        {% block category %}
+                        <option selected value="">----Chọn----</option>
+                        {% endblock %}
+                    </select>
+                </div>
+                <p id="err-msg-cate-prop" style="color: red; padding-top: 10px;font-size: 10px;"></p>
+            </div>
+        </div>
+        <div class="form-row justify-content-between">
+            <div class="col-md-6 mb-3">
+                <label for="validationCustom03">Diện tích (m<sup>2</sup>) <span style="color:red">*</span> </label>
+                {% block area%}
+                <input type="number" name="area" class="form-control number" id="validationCustom03" value="0"
+                    placeholder="Nhập diện tích..." required>
+                {% endblock %}
+                <p id="err-msg-area" style="color: red;font-size: 10px;"></p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="price">Giá (VND) <span style="color:red">*</span> </label>
+                {% block price %}
+                <input type="number" class="form-control number" id="price" value="0" required name="price">
+                {% endblock %}
+                <p id="err-msg-price" style="color: red;font-size: 10px;"></p>
+            </div>
+        </div>
+
+        <div class="form-row justify-content-between row-change-2">
+            <div class="col-md-4 mb-3">
+                <label for="validationCustom03">Số phòng ngủ </label>
+                {% block bedrooms %}
+                <input type="number" name="bedrooms" class="form-control number" id="validationCustom03" value="0"
+                    placeholder="Số phòng ngủ" required>
+                {% endblock %}
+                <p id="err-msg-bedrooms" style="color: red;font-size: 10px;"></p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="validationCustom04">Số phòng tắm, vệ sinh</label>
+                {% block bathrooms %}
+                <input type="number" name="bathrooms" class="form-control number" id="validationCustom04" value="0">
+                {% endblock %}
+                <p id="err-msg-bathrooms" style="color: red;font-size: 10px;"></p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="validationCustom05">Số tầng</label>
+                {% block floor %}
+                <input type="number" name="floor" class="form-control number" id="validationCustom05" value="0">
+                {% endblock %}
+            </div>
+        </div>
+
+        <div class="form-row justify-content-between">
+            <div class="col-md-5 mb-3 col-p">
+                <label for="validationCustom03">Giấy tờ pháp lý <span style="color:red">*</span> </label>
+                {% block policy%}
+                <input type="text" name="policy" class="form-control number" placeholder="Sổ hồng/sổ đỏ/hợp đồng/..."
+                    required>
+                {% endblock %}
+                <p id="err-msg-policy" style="color: red;font-size: 10px;"></p>
+            </div>
+            <div class="col-md-2 mb-3 col-d">
+                <label for="direction">Hướng </label>
+                <select name="direction" class="form-control" id="direction">
+                    {% block direction%}
+                    <option selected value=""></option>
+                    {% endblock %}
+                    <option value="Đông">Đông</option>
+                    <option value="Tây">Tây</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Bắc">Bắc</option>
+                    <option value="Đông Bắc">Đông Bắc</option>
+                    <option value="Đông Nam">Đông Nam</option>
+                    <option value="Tây Bắc">Tây Bắc</option>
+                    <option value="Tây Nam">Tây Nam</option>
+                </select>
+            </div>
+            <div class="col-md-5 mb-3 col-f">
+                <label for="furniture">Tình trạng nội thất</label>
+                {% block furniture %}
+                <input type="text" class="form-control number" id="furniture" placeholder="Đầy đủ/Cơ bản/..."
+                    name="furniture">
+                {% endblock %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px; margin: 5% 0 2% 0;">Tiêu đề tin đăng
+                và mô tả chi tiết</h4>
+        </div>
+        <div class="form-row">
+            <div class="col-md-12 mb-3">
+                <label for="validationCustom01">Tiêu đề <span style="color:red">*</span> </label>
+                {% block input_title %}
+                <input type="text" class="form-control" id="validationCustom01" placeholder="Nhập tiêu đề..." required
+                    name="title">
+                {% endblock %}
+                <p id="err-msg-title" style="color: red;font-size: 10px;"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-12 mb-3">
+                <label for="validationCustom01">Ngày hết hạn <span style="color:red">*</span> </label>
+                {% block expire %}
+                <input type="datetime-local" class="form-control" id="validationCustom01" required name="expire-at">
+                {% endblock %}
+                <p id="err-msg-expire-at" style="color: red;font-size: 10px;"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-12 mb-3">
+                <label for="description">Mô tả <span style="color:red">*</span></label>
+                {% block description %}
+                <textarea class="form-control" id="description" rows="10" cols="100" name="description"></textarea>
+                {% endblock %}
+                <p id="err-msg-description" style="color: red;font-size: 10px;"></p>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px; margin: 5% 0 2% 0;">Hình ảnh BĐS</h4>
+        </div>
+        <div class="form-row">
+            <div class="col-md-12 mb-3">
+                <label for="image">Hình ảnh <span style="color:red">*</span> </label>
+                {% block input_image %}
+                <input type="file" class="form-control" id="image" multiple name="images" accept="image/*" required>
+                {% endblock %}
+                <p id="err-msg-images" style="color: red; padding-top: 10px;font-size: 10px;"></p>
+            </div>
+        </div>
+        {% block image %}
+        {% endblock %}
+        {%else%}
+        <div class="form-row">
+            <div class="col-md-12 mb-3">
+                <label>Trạng thái BĐS <span style="color:red">*</span> </label>
+                {% block status %}
+
+                {% endblock %}
+                <p id="err-msg-expire-at" style="color: red;font-size: 10px;"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-12 mb-3">
+                <label for="validationCustom01">Ngày hết hạn <span style="color:red">*</span> </label>
+                {% block expire_two %}
+                <input type="datetime-local" class="form-control" id="validationCustom01" required name="expire-at">
+                {% endblock %}
+                <p id="err-msg-expire-at" style="color: red;font-size: 10px;"></p>
+            </div>
+        </div>
+        {%endif%}
+        {% block push %}
+        <button style="height: 40px; width: 120px; margin: 20px auto;" name='validate' class="btn btn-primary"
+            type="button">Hoàn
+            tất
+        </button>
+        <button style="height: 40px; width: 120px; margin: 20px auto; display: none;" name='submit'
+            class="btn btn-primary" type="submit">Hoàn
+            tất
+        </button>
+        {% endblock %}
+    </form>
+
+</section>
+{% endblock %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/post.js') }}"></script>
+<script>
+    window.onload = () => {
+        let href = location.href, mapContainer = document.getElementById('map');
+        var category_id = $("#category-post").val();
+        load_type_by_category(category_id);
+        if (mapContainer) {
+            {% if post %}
+                map = L.map('map').setView([{{post.lat}}, {{post.lon}}], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                marker = L.marker([{{post.lat}}, {{post.lon}}]).addTo(map);
+            {% else %}
+                map = L.map("map").setView([0, 0], 13);
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    maxZoom: 19,
+                    attribution:
+                        'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                }).addTo(map);
+            {% endif %}
+
+            map.on("click", function (e) {
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+                marker = L.marker(e.latlng).addTo(map);
+                document.getElementById("location").value =
+                    e.latlng.lat + ", " + e.latlng.lng;
+            });
+        }   
+    if (href.includes('/edit/')) {
+        document.getElementById("map").style.display = "block";
+    }
+    else {
+        document.getElementById("map").style.display = "none";
+    }
+    };
+</script>
+{% endblock %}
+
+{% elif not current_user.is_authenticated %}
+<div>
+    <p>Vui lòng <a href="/login_register?next=/post">đăng nhập</a> trước khi đăng
+        tin!</p>
+</div>
+{% elif expire %}
+<div>
+    <p>Tài khoản của bạn bị cấm đăng bài cho tới thời điểm <span style="color: red;">{{expire}}</span>!</p>
+</div>
+{% else %}
+<div>
+    <p>Vui lòng <a href="/profile/edit_profile/{{current_user_id}}">đăng ký</a> trở thành nhà môi giới trước khi đăng
+        tin!</p>
+</div>
+{% endif %}

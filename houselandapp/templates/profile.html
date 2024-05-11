@@ -1,0 +1,419 @@
+{% extends "/layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block header %}
+<header>
+    <div class="main-menu">
+        <img src="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076219/FlightMangement/logo_komha6.png"
+            alt="logo">
+
+        <div class="menu">
+            <ul class="flex menu-items">
+                <li class="mr-2">
+                    <form method="get" class="d-flex justify-content-center h-100 " id="search-form" autocomplete="on">
+                        <div class="searchbar d-flex justify-content-between align-items-center">
+                            {% if parameters['issales'] == 'true' %}
+                            <select class="selectpicker" id="issales">
+                                <option selected value="true">Cần mua</option>
+                                <option value="false">Cần thuê</option>
+                            </select>
+                            {%else%}
+                            <select class="selectpicker" id="issales">
+                                <option value="true">Cần mua</option>
+                                <option selected value="false">Cần thuê</option>
+                            </select>
+                            {%endif%}
+
+                            {% if parameters['q'] %}
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..."
+                                value="{{parameters['q']}}">
+                            {%else%}
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..." value="">
+                            {%endif%}
+                            <a href="#" id="search_btn" class="search_icon"><i class="fas fa-search"></i></a>
+                        </div>
+                    </form>
+                </li>
+                <li id="home">
+                    <a class="category" href="/">Trang chủ</a>
+                </li>
+                <li id="sales">
+                    <div class="btn-group dropright">
+                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Mua bán
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/sales/all">Tất cả</a></li>
+                            {% for c in sales_cate %}
+                            <li><a class="dropdown-item" href="/sales/{{c['id']}}">{{c.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li id="rents">
+                    <div class="btn-group dropright">
+                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Cho thuê
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/rents/all">Tất cả</a></li>
+                            {% for c in rent_cate %}
+                            <li><a class="dropdown-item" href="/rents/{{c['id']}}">{{c.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li id="contact">
+                    <a class="category" href="#">Liên hệ</a>
+                </li>
+                <li>
+                    <div class="user">
+                        {% if current_user.is_authenticated %}
+                        <a class="category" href="/profile/{{current_user_id}}"><i class="fas fa-user"></i></a>
+                        <div class="flex menu-user">
+                            <div class="flex" id="profile">
+                                <a class="category" href="/profile/{{current_user_id}}">Hồ sơ</a>
+                            </div>
+                            <div>
+                                <span>/</span>
+                            </div>
+                            <div class="flex logout">
+                                <a class="category" href="/logout">Đăng xuất</a>
+                            </div>
+                        </div>
+                        {% else %}
+                        <a class="category" href="#"><i class="fas fa-user"></i></a>
+                        <div class="flex menu-user">
+                            <div class="flex">
+                                <a class="category" href="/login_register">Đăng ký</a>
+                            </div>
+                            <div>
+                                <span>/</span>
+                            </div>
+                            <div class="flex" id="login">
+                                <a class="category" href="/login_register">Đăng nhập</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</header>
+{% endblock %}
+{% block content %}
+{% if current_user.is_authenticated %}
+<section class="row">
+    <form class="col-3" method="post">
+        <div class="card">
+            <img class="card-img-top" src="{{user.avatar}}" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">{{user.name}}</h5>
+                <div class="rating mb-3">
+                    <div class="rating__overlay">
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                    </div>
+                    <div class="rating__base">
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                {% if user.description %}
+                <p class="mb-3"><small>{{user.description}}</small></p>
+                {%endif%}
+                {% if user.id == current_user.id %}
+                <a href="/post" class="btn btn-primary row" style="margin: 2.5% 0;">
+                    <span class="col-9">Đăng tin mới</span>
+                </a>
+                <a href="/profile/edit_profile/{{user_id}}" class="btn btn-success row" style="margin: 2.5% 0;">
+                    <span class="col-9">Chỉnh sửa hồ sơ</span>
+                </a>
+                {%endif%}
+                <a href="/review/{{user_id}}" class="btn btn-warning row" style="margin: 2.5% 0;">
+                    <span class="col-9">Đánh giá từ tôi</span>
+                </a>
+            </div>
+        </div>
+    </form>
+    <form method="post" class="col-9">
+        {% if err_msg.__eq__(1) %}
+        <div class="alert alert-success">
+            Xóa thành công!
+        </div>
+        {%endif%}
+        <div class="header row">
+            {% if user.id == current_user.id %}
+            <a href="javascript:void(0)" id="upload" style="width: 20%;" class="active">Bài viết đã đăng</a>
+            <a href="javascript:void(0)" id="waiting" style="width: 20%;">Bài viết chờ duyệt</a>
+            <a href="javascript:void(0)" id="saved" style="width: 20%;">Bài viết đã thả tim</a>
+            <a href="javascript:void(0)" id="expired" style="width: 20%;">Bài viết đã hết hạn</a>
+            <a href="javascript:void(0)" id="viewed" style="width: 20%;">Bài viết đã xem</a>
+            {% else %}
+            <a href="javascript:void(0)" id="upload" class="col-md-12 active">Bài viết đã đăng</a>
+            {% endif %}
+        </div>
+        
+        {% if err_msg.__eq__(-1)%}
+        <div class="alert alert-danger">
+            Đã có lỗi xảy ra, vui lòng thử lại!
+        </div>
+        {% endif %}
+        {% if posts %}
+        <div class="flex handbook-content upload" style="margin-top: 50px;">
+            <div class="d-flex flex-wrap justify-content-between handbook-items" id="handbook-items"
+                style="width: 100%;">
+                {% for p in posts %}
+                <div class="flex1 handbook-item" style="width: 100% !important;">
+                    <div class="col30 handbook-img item{{p.id}}-c3 flex" id="{{p.id}}">
+                        {% if p.images %}
+                        <img class="img" src="{{p.images[0].url}}" alt="" />
+                        {% else %}
+                        <img src="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076213/FlightMangement/icon-web_fgxmmq.png"
+                            alt="" />
+                        {% endif %}
+                    </div>
+                    <div class="col70 handbook-info item-c7">
+                        <p class="overflow" style="color: blue; font-size: 12px; height: 28px;"><i
+                                class='fas fa-map-marker-alt'> </i>
+                            <span class="p-a">{{p.address}}</span>
+                        </p>
+                        <h3 class="overflow" style="font-size:15px;">{{p.title}}</h3>
+                        <p class='date' style="font-size:13px;"><i class="fab fa-windows"></i> Diện tích:
+                            {{"{:,}".format(p.area)}}
+                            m<sup>2</sup></p>
+                        <p class='date' style="color: red;font-size:13px;"><i class="fas fa-dollar-sign"></i>
+                            <span class="display-price">Giá: {{p.price}} VNĐ</span>
+                        </p>
+                        <a class="btn btn-primary" href="/posts/{{p.id}}"
+                            style="font-size: 13px; width: 100px; height: 30px; margin-top: 10px;">
+                            Xem chi tiết
+                        </a>
+                        <a class="btn btn-outline-warning" title="Edit" name="edit" href="/edit/{{p.id}}"
+                            style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 250px;">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button value="{{p.id}}" class="btn btn-outline-danger" title="Delete" name="delete"
+                            type="submit" style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-danger upload" style="margin-top:50px;">
+            Không có bài viết nào được tìm thấy!
+        </div>
+        {% endif %}
+        {% if user.id == current_user.id %}
+        {% if waiting_posts %}
+        <div class="flex handbook-content waiting" style="margin-top: 50px;">
+            <div class="d-flex flex-wrap justify-content-between handbook-items" id="saved-items" style="width: 100%;">
+                {% for p in waiting_posts %}
+                <div class="flex1 handbook-item" style="width: 100% !important;">
+                    <div class="col30 handbook-img item{{p.id}}-c3 flex" id="s{{p.id}}">
+                        {% if p.images %}
+                        <img class="img" src="{{p.images[0].url}}" alt="" />
+                        {% else %}
+                        <img src="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076213/FlightMangement/icon-web_fgxmmq.png"
+                            alt="" />
+                        {% endif %}
+                    </div>
+                    <div class="col70 handbook-info item-c7">
+                        <p class="overflow" style="color: blue; font-size: 12px; height: 28px;"><i
+                                class='fas fa-map-marker-alt'> </i>
+                            <span class="p-a">{{p.address}}</span>
+                        </p>
+                        <h3 class="overflow" style="font-size:15px;">{{p.title}}</h3>
+                        <p class='date' style="font-size:13px;"><i class="fab fa-windows"></i> Diện tích:
+                            {{"{:,}".format(p.area)}}
+                            m<sup>2</sup></p>
+                        <p class='date' style="color: red;font-size:13px;"><i class="fas fa-dollar-sign"></i>
+                            <span class="display-price">Giá: {{p.price}} VNĐ</span>
+                        </p>
+                        <a class="btn btn-primary" href="/posts/{{p.id}}"
+                            style="font-size: 13px; width: 100px; height: 30px; margin-top: 10px;">
+                            Xem chi tiết
+                        </a>
+                        <a class="btn btn-outline-warning" title="Edit" name="edit" href="/edit/{{p.id}}"
+                            style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 250px;">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button value="{{p.id}}" class="btn btn-outline-danger" title="Delete" name="delete"
+                            type="submit" style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-danger waiting" style="margin-top:50px;">
+            Không có bài viết nào được tìm thấy!
+        </div>
+        {% endif %}
+        {% if saved_posts %}
+        <div class="flex handbook-content saved" style="margin-top: 50px;">
+            <div class="d-flex flex-wrap justify-content-between handbook-items" id="saved-items" style="width: 100%;">
+                {% for p in saved_posts %}
+                <div class="flex1 handbook-item" style="width: 100% !important;">
+                    <div class="col30 handbook-img item{{p.id}}-c3 flex" id="s{{p.id}}">
+                        {% if p.images %}
+                        <img class="img" src="{{p.images[0].url}}" alt="" />
+                        {% else %}
+                        <img src="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076213/FlightMangement/icon-web_fgxmmq.png"
+                            alt="" />
+                        {% endif %}
+                    </div>
+                    <div class="col70 handbook-info item-c7">
+                        <p class="overflow" style="color: blue; font-size: 12px; height: 28px;"><i
+                                class='fas fa-map-marker-alt'> </i>
+                            <span class="p-a">{{p.address}}</span>
+                        </p>
+                        <h3 class="overflow" style="font-size:15px;">{{p.title}}</h3>
+                        <p class='date' style="font-size:13px;"><i class="fab fa-windows"></i> Diện tích:
+                            {{"{:,}".format(p.area)}}
+                            m<sup>2</sup></p>
+                        <p class='date' style="color: red;font-size:13px;"><i class="fas fa-dollar-sign"></i>
+                            <span class="display-price">Giá: {{p.price}} VNĐ</span>
+                        </p>
+                        <a class="btn btn-primary" href="/posts/{{p.id}}"
+                            style="font-size: 13px; width: 100px; height: 30px; margin-top: 10px;">
+                            Xem chi tiết
+                        </a>
+                        <button value="{{p.id}}" class="btn btn-outline-danger" title="Delete" name="remove"
+                            type="submit" style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-danger saved" style="margin-top:50px;">
+            Không có bài viết nào được tìm thấy!
+        </div>
+        {% endif %}
+        {% if expired_posts %}
+        <div class="flex handbook-content expired" style="margin-top: 50px;">
+            <div class="d-flex flex-wrap justify-content-between handbook-items" id="saved-items" style="width: 100%;">
+                {% for p in expired_posts %}
+                <div class="flex1 handbook-item" style="width: 100% !important;">
+                    <div class="col30 handbook-img item{{p.id}}-c3 flex" id="s{{p.id}}">
+                        {% if p.images %}
+                        <img class="img" src="{{p.images[0].url}}" alt="" />
+                        {% else %}
+                        <img src="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076213/FlightMangement/icon-web_fgxmmq.png"
+                            alt="" />
+                        {% endif %}
+                    </div>
+                    <div class="col70 handbook-info item-c7">
+                        <p class="overflow" style="color: blue; font-size: 12px; height: 28px;"><i
+                                class='fas fa-map-marker-alt'> </i>
+                            <span class="p-a">{{p.address}}</span>
+                        </p>
+                        <h3 class="overflow" style="font-size:15px;">{{p.title}}</h3>
+                        <p class='date' style="font-size:13px;"><i class="fab fa-windows"></i> Diện tích:
+                            {{"{:,}".format(p.area)}}
+                            m<sup>2</sup></p>
+                        <p class='date' style="color: red;font-size:13px;"><i class="fas fa-dollar-sign"></i>
+                            <span class="display-price">Giá: {{p.price}} VNĐ</span>
+                        </p>
+                        <a class="btn btn-primary" href="/posts/{{p.id}}"
+                            style="font-size: 13px; width: 100px; height: 30px; margin-top: 10px;">
+                            Xem chi tiết
+                        </a>
+                        <a class="btn btn-outline-warning" title="Edit" name="edit" href="/edit/{{p.id}}"
+                            style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 250px;">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button value="{{p.id}}" class="btn btn-outline-danger" title="Delete" name="delete"
+                            type="submit" style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-danger expired" style="margin-top:50px;">
+            Không có bài viết nào được tìm thấy!
+        </div>
+        {% endif %}
+        {% if viewed_list %}
+        <div class="flex handbook-content viewed" style="margin-top: 50px;">
+            <div class="d-flex flex-wrap justify-content-between handbook-items" id="saved-items" style="width: 100%;">
+                {% for p in viewed_list %}
+                <div class="flex1 handbook-item" style="width: 100% !important;">
+                    <div class="col30 handbook-img item{{p.id}}-c3 flex" id="s{{p.id}}">
+                        {% if p.images %}
+                        <img class="img" src="{{p.images[0].url}}" alt="" />
+                        {% else %}
+                        <img src="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076213/FlightMangement/icon-web_fgxmmq.png"
+                            alt="" />
+                        {% endif %}
+                    </div>
+                    <div class="col70 handbook-info item-c7">
+                        <p class="overflow" style="color: blue; font-size: 12px; height: 28px;"><i
+                                class='fas fa-map-marker-alt'> </i>
+                            <span class="p-a">{{p.address}}</span>
+                        </p>
+                        <h3 class="overflow" style="font-size:15px;">{{p.title}}</h3>
+                        <p class='date' style="font-size:13px;"><i class="fab fa-windows"></i> Diện tích:
+                            {{"{:,}".format(p.area)}}
+                            m<sup>2</sup></p>
+                        <p class='date' style="color: red;font-size:13px;"><i class="fas fa-dollar-sign"></i>
+                            <span class="display-price">Giá: {{p.price}} VNĐ</span>
+                        </p>
+                        <a class="btn btn-primary" href="/posts/{{p.id}}"
+                            style="font-size: 13px; width: 100px; height: 30px; margin-top: 10px;">
+                            Xem chi tiết
+                        </a>
+                        <button value="{{p.id}}" class="btn btn-outline-danger" title="Delete" name="remove_viewed"
+                            type="submit" style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 260px;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-danger viewed" style="margin-top:50px;">
+            Không có bài viết nào được tìm thấy!
+        </div>
+        {% endif %}
+        {% endif %}
+    </form>
+</section>
+{% else %}
+<p>Vui lòng <a href="/login-register?next=/profile/{{user_id}}">đăng nhập</a> để xem hồ sơ!</p>
+{% endif %}
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+<script>
+    window.onload = function () {
+        document.querySelector('.rating__overlay').style.width = parseFloat(`{{rating}}`)/5*100 + "%";
+    }
+</script>
+{% endblock %}

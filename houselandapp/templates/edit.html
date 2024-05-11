@@ -1,0 +1,168 @@
+{% extends '/post.html'%}
+
+{% block h2 %}
+<div class="title">
+    <h2>CHỈNH SỬA</h2>
+</div>
+{% endblock %}
+
+{% block selected%}
+<option value="{{category.id}}" selected id="cate-r-{{category.id}}-selected">{{category.name}}</option>
+{% endblock %}
+
+{% block issales %}
+{% if post.issales %}
+<div class="btn-group" role="group">
+    <input type="radio" class="btn-check" name="is_sale" id="btnradio1" value="yes" autocomplete="off" checked>
+    <label class="btn btn-primary" for="btnradio1">Cần bán</label>
+
+    <input type="radio" class="btn-check" name="is_sale" id="btnradio2" value="no" autocomplete="off">
+    <label class="btn btn-outline-primary" for="btnradio2">Cho thuê</label>
+</div>
+{%else%}
+<div class="btn-group" role="group">
+    <input type="radio" class="btn-check" name="is_sale" id="btnradio1" value="yes" autocomplete="off">
+    <label class="btn btn-outline-primary" for="btnradio1">Cần bán</label>
+
+    <input type="radio" class="btn-check" name="is_sale" id="btnradio2" value="no" autocomplete="off" checked>
+    <label class="btn btn-primary" for="btnradio2">Cho thuê</label>
+</div>
+{%endif%}
+{% endblock %}
+
+{% block input_address %}
+<input type="text" class="form-control" id="address" value="{{address_arr[1]+', '+address_arr[2]+', '+address_arr[3]}}"
+    name="address" style="color: lightgrey;">
+{% endblock %}
+
+{% block province %}
+<option selected value="{{address_arr[3]}}">{{address_arr[3]}}</option>
+{% endblock %}
+
+{% block district %}
+<option selected value="{{address_arr[2]}}">{{address_arr[2]}}</option>
+{% endblock %}
+
+{% block ward %}
+<option selected value="{{address_arr[1]}}">{{address_arr[1]}}</option>
+{% endblock %}
+
+{% block street %}
+<input type="text" class="form-control" id="street" placeholder="Nhập số nhà, tên đường..." required name="street"
+    value="{{address_arr[0]}}">
+{% endblock %}
+
+{% block category %}
+<option selected value="{{post.type}}">{{post.type}}</option>
+{% endblock %}
+
+{% block area%}
+<input type="number" name="area" class="form-control number" id="validationCustom03" value="{{post.area}}"
+    placeholder="Nhập diện tích..." required>
+{% endblock %}
+
+{% block price %}
+<input type="number" class="form-control number" id="price" value="{{post.price}}" required name="price">
+{% endblock %}
+
+{% block bedrooms %}
+<input type="number" name="bedrooms" class="form-control number" id="validationCustom03" value="{{post.bedrooms}}"
+    placeholder="Số phòng ngủ" required>
+{% endblock %}
+
+{% block bathrooms %}
+<input type="number" name="bathrooms" class="form-control number" id="validationCustom04" value="{{post.bathrooms}}">
+{% endblock %}
+
+{% block floor %}
+<input type="number" name="floor" class="form-control number" id="validationCustom05" value="{{post.floor}}">
+{% endblock %}
+
+{% block policy%}
+<input type="text" name="policy" class="form-control number" value="{{post.policy}}"
+    placeholder="Sổ hồng/sổ đỏ/hợp đồng/..." required>
+{% endblock %}
+
+{% block direction%}
+<option selected value="{{post.direction}}">{{post.direction}}</option>
+{% endblock %}
+
+{% block furniture %}
+<input type="text" class="form-control number" id="furniture" value="{{post.furniture}}" placeholder="Đầy đủ/Cơ bản/..."
+    name="furniture">
+{% endblock %}
+
+{% block input_title %}
+<input type="text" class="form-control" id="validationCustom01" value="{{post.title}}" placeholder="Nhập tiêu đề..."
+    required name="title">
+{% endblock %}
+
+{% block expire %}
+<input type="datetime-local" class="form-control" id="validationCustom01" value="{{post.expire_at}}" required
+    name="expire-at">
+{% endblock %}
+
+{% block status %}
+<div class="btn-group ml-3" role="group">
+    {% if post.issales %}
+    {% if post.status.value == 'Đã bán'%}
+    <input class="btn-check" type="checkbox" checked value="" id="defaultCheck1" name="status">
+    <label class="btn btn-primary" for="defaultCheck1">Đã bán</label>
+    {%else%}
+    <input class="btn-check" type="checkbox" value="sale" id="defaultCheck1" name="status">
+    <label class="btn btn-outline-primary" for="defaultCheck1">Đã bán</label>
+    {%endif%}
+    {%else%}
+    {%if post.status.value == 'Đã cho thuê'%}
+    <input class="btn-check" type="checkbox" checked value="" id="defaultCheck1" name="status">
+    <label class="btn btn-primary" for="defaultCheck1">Đã cho thuê</label>
+    {%else%}
+    <input class="btn-check" type="checkbox" value="rent" id="defaultCheck1" name="status">
+    <label class="btn btn-outline-primary" for="defaultCheck1">Đã cho thuê</label>
+    {%endif%}
+    {%endif%}
+</div>
+{% endblock %}
+
+{% block expire_two %}
+<input type="datetime-local" class="form-control" id="validationCustom01" value="{{post.expire_at}}" required
+    name="expire-at">
+{% endblock %}
+
+{% block description %}
+<textarea class="form-control" id="description" rows="10" cols="100" name="description">{{post.description}}</textarea>
+{% endblock %}
+
+{% if post.images %}
+{% block input_image %}
+<input type="file" class="form-control" id="image" multiple name="images" accept="image/*">
+{% endblock %}
+
+{% block image %}
+<div class="flex">
+    {% for img in post.images %}
+    <div class="card text-white" style="max-height: 150px; max-width: 200px; border:none; margin-left: 20px;">
+        <img class="card-img" src="{{img}}" alt="Card image" style="max-height: 150px; max-width: 200px">
+        <div class="card-img-overlay">
+            <button name="delete-img" value="{{img.id}}" class="btn btn-danger card-title"
+                style="width: 40px; height:40px !important;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% endif %}
+
+
+{% block push %}
+<button style="height: 40px; width: 120px; margin: 20px auto;" name='cancel' class="btn btn-danger" type="cancel">Hủy
+</button>
+<button style="height: 40px; width: 120px; margin: 20px auto;" name='validate' class="btn btn-primary" type="button">Hoàn
+    tất
+</button>
+<button style="height: 40px; width: 120px; margin: 20px auto; display: none;" name='submit' class="btn btn-primary" type="submit">Hoàn
+    tất
+</button>
+{% endblock %}

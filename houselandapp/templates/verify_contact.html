@@ -1,0 +1,85 @@
+{% extends 'otpVerification.html' %}
+
+{% block notify %}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <header>
+        <i class="bx bxs-check-shield"></i>
+    </header>
+    {% if current_user.user_role == admin %}
+        {% block welcome %}
+        <h4>Xin chào <span id="name"></span>,<br>Nhập mã OTP được gửi qua <span id="type"></span> của bạn!</h4>
+        {% endblock %}
+        <form method="post">
+            <div class="input-field">
+                <input type="number" name="ip_1"/>
+                <input type="number" name="ip_2" disabled/>
+                <input type="number" name="ip_3" disabled/>
+                <input type="number" name="ip_4" disabled/>
+                <input type="number" name="ip_5" disabled/>
+                <input type="number" name="ip_6" disabled/>
+            </div>
+            <div class="form-row">
+                <button class="col-6" name="back"><a href="/profile/edit_profile/{{id}}" class="back">Quay lại</a></button>        
+                <button disabled class="verify col-6" name="verify">Xác thực</button>
+            </div>
+        </form>
+
+    {% elif not user.phone %}
+    <h4>Xin chào {{user.name}},<br>Bạn cần xác minh số điện thoại trước khi tiếp tục!</h4>
+
+    <form method="post">
+        <label for="phone">Số điện thoại:</label>
+        <input type="text" name="phone" style=" padding: 12px 15px;
+        width: 150%;
+        border-radius: 5px;"/>
+        {% if not err_msg['is_true'] and err_msg["id"] != -1 %}
+        <p style="color: red;"> {{err_msg['content']}}</p>
+           
+        {% endif %}
+        <div class="form-row">
+            <button class="col-6" name="back"><a href="{{url_for('login_register')}}" class="back">Quay lại</a></button>
+            <button class="verify col-6" name="send-otp">Lấy mã OTP</button>
+        </div>
+    </form>
+    {% else %}
+    <h4>Xin chào {{user.name}},<br>Nhập mã OTP được gửi trong số điện thoại của bạn!</h4>
+    <form method="post">
+        <div class="input-field">
+            <input type="number" name="ip_1"/>
+            <input type="number" name="ip_2" disabled/>
+            <input type="number" name="ip_3" disabled/>
+            <input type="number" name="ip_4" disabled/>
+            <input type="number" name="ip_5" disabled/>
+            <input type="number" name="ip_6" disabled/>
+        </div>
+        <div class="form-row">
+            <button class="col-6" name="back"><a href="{{url_for('login_register')}}" class="back">Quay lại</a></button>        
+            <button disabled class="verify col-6" name="verify">Xác thực</button>
+        </div>
+    </form>
+    {%endif%}
+</div>
+{% endblock%}
+{%block script%}
+<script>
+    window.onload = () => {
+        let endpoint = window.location.search.substring(1);
+        let params = endpoint.split('&');
+        let name = decodeURIComponent(params[0].split("=")[1]).replaceAll("+", " ");
+        let typeStr = params[1].split("=")[1];
+        document.getElementById("name").textContent = name;
+        if (typeStr == "email") {
+            document.getElementById("type").textContent = "email";
+        }
+        if (typeStr == "phone") {
+            document.getElementById("type").textContent = "số điện thoại";
+        }
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,302 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap");
+:root {
+  --main-color: #6dbfe2;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+.body {
+  font-size: 15px;
+}
+
+section {
+  margin-top: 50px;
+  width: 100%;
+}
+
+ul {
+  list-style-type: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.container {
+  margin: 0 auto;
+}
+
+.flex1 {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.title {
+  margin-bottom: 30px;
+}
+
+h2 {
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0 0 25px;
+  color: var(--main-color);
+  position: relative;
+  font-size: 35px;
+}
+
+h2::before {
+  position: absolute;
+  content: "";
+  height: 3px;
+  width: 150px;
+  background-color: var(--main-color);
+  border-radius: 10px;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+h2::after {
+  position: absolute;
+  content: "\2764";
+  top: 95%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 30px;
+  color: red;
+  background-color: #fff;
+  bottom: -20px;
+}
+
+h3 {
+  color: powderblue !important;
+  padding: 0;
+  font-size: 1.25em;
+  margin-bottom: 0px;
+}
+
+.col30 {
+  width: 30%;
+  height: 10.25rem;
+  overflow: hidden;
+}
+
+.col70 {
+  width: 70%;
+  padding: 0 2%;
+}
+
+.handbook-item {
+  height: 11rem;
+  width: 49.5%;
+}
+
+.handbook-item {
+  margin: 1% 0;
+  padding-left: 0;
+}
+
+.handbook-item:hover {
+  box-shadow: 5px 5px 10px silver;
+  background-color: #fffefb;
+}
+
+.handbook-item h3 {
+  color: Green !important;
+  font-weight: 1000;
+  padding-top: 10px;
+}
+
+.handbook-item > div.col70 {
+  height: 181.66px;
+}
+
+.handbook-item p {
+  padding: 10px 0 0px;
+  margin-bottom: 0px;
+}
+
+.handbook-item > .col70 > p.date {
+  color: rgb(131, 128, 128);
+}
+
+.handbook-item .overflow {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 28px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.handbook-item img {
+  width: 110%;
+  height: 10.25rem;
+  overflow: hidden;
+}
+
+.view {
+  margin-top: 10px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 13px;
+  margin-left: 10px;
+}
+
+.hint {
+  margin-top: 30px;
+}
+
+.hint .card-image {
+  width: 100%;
+  height: 12rem;
+  margin: 0 auto;
+}
+
+.hint .card-image img {
+  height: 12rem;
+  overflow: hidden;
+}
+
+.hint .card {
+  width: 15rem;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  height: 26rem;
+}
+
+.hint .hint-address {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.hint .hint-address p {
+  font-size: 12px;
+  padding: 5px 5px 0;
+  height: 3.7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  margin-bottom: 5px;
+}
+
+.hint .card-body {
+  padding: 0;
+  width: 85%;
+  margin: 0 auto;
+}
+
+.hint .card-title {
+  height: 36px;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.hint .card-body p {
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.hint .card-body a {
+  width: 70%;
+  font-size: 13px;
+  height: 32px;
+  line-height: 16px;
+}
+
+.container__banner {
+  background: url("https://res.cloudinary.com/di4bpbe6z/image/upload/v1694869331/cta_dmwcrt.jpg")
+    center / cover no-repeat;
+  width: 100%;
+  margin-top: 60px;
+}
+
+.grid {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.container__banner-wrap {
+  padding: 50px 0;
+  justify-content: center;
+  align-items: center;
+}
+
+.container__banner-title {
+  margin: 20px 0;
+  color: white;
+  font-family: Slogan;
+}
+
+.container__banner-title > h2 {
+  font-size: 500%;
+  font-weight: 500;
+  padding-left: 8%;
+  font-family: Slogan;
+}
+
+.container__banner-title > h1 {
+  font-size: 400%;
+  font-weight: 500;
+  padding-left: 4%;
+  font-family: Slogan;
+}
+
+.container__banner-view {
+  text-align: center;
+}
+
+.container__banner-view > a {
+  text-decoration: none;
+  color: #31a7da;
+  font-size: 20px;
+  font-weight: 400;
+  display: inline-block;
+  background-color: #fff;
+  padding: 10px 30px;
+  border-radius: 5px;
+}
+
+.sales {
+  margin-bottom: 5%;
+}
+
+.intro-item {
+  text-align: center;
+  width: 30%;
+}
+
+.fixed {
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 80px;
+  width: 73.5%;
+  background-image: url("https://res.cloudinary.com/doaux2ndg/image/upload/v1670076220/FlightMangement/nhaTrang_lwglis.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 0 0 15px 15px;
+  transition: 0.7s !important;
+}
+.fixed button {
+  height: 50%;
+  margin-right: 2%;
+}
+
+.fixed > div.bootstrap-select {
+  margin-left: 2%;
+}

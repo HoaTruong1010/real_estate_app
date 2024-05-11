@@ -1,0 +1,222 @@
+{% extends "/layout/base.html" %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/post.css') }}">
+{% endblock %}
+
+{% block header %}
+<header>
+    <div class="main-menu">
+        <img src="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076219/FlightMangement/logo_komha6.png"
+            alt="logo">
+
+        <div class="menu">
+            <ul class="flex menu-items">
+                <li class="mr-2">
+                    <form method="get" class="d-flex justify-content-center h-100 " id="search-form" autocomplete="on">
+                        <div class="searchbar d-flex justify-content-between align-items-center">                            
+                            {% if parameters['issales'] == 'true' %}
+                            <select class="selectpicker" id="issales">
+                                <option selected value="true">Cần mua</option>
+                                <option value="false">Cần thuê</option>
+                            </select>
+                            {%else%}
+                            <select class="selectpicker" id="issales">
+                                <option value="true">Cần mua</option>
+                                <option selected value="false">Cần thuê</option>
+                            </select>
+                            {%endif%}
+
+                            {% if parameters['q'] %}
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..." value="{{parameters['q']}}">
+                            {%else%}
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..." value="">
+                            {%endif%}
+                            <a href="#" id="search_btn" class="search_icon"><i class="fas fa-search"></i></a>
+                        </div>
+                    </form>
+                </li>
+                <li id="home">
+                    <a class="category" href="/">Trang chủ</a>
+                </li>
+                <li id="sales">
+                    <div class="btn-group dropright">
+                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Mua bán
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/sales/all">Tất cả</a></li>
+                            {% for c in sales_cate %}
+                            <li><a class="dropdown-item" href="/sales/{{c['id']}}">{{c.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li id="rents">
+                    <div class="btn-group dropright">
+                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Cho thuê
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/rents/all">Tất cả</a></li>
+                            {% for c in rent_cate %}
+                            <li><a class="dropdown-item" href="/rents/{{c['id']}}">{{c.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li id="contact">
+                    <a class="category" href="#">Liên hệ</a>
+                </li>
+                <li>
+                    <div class="user">
+                        {% if current_user.is_authenticated %}
+                        <a class="category" href="/profile/{{current_user_id}}"><i class="fas fa-user"></i></a>
+                        <div class="flex menu-user">
+                            <div class="flex" id="profile">
+                                <a class="category" href="/profile/{{current_user_id}}">Hồ sơ</a>
+                            </div>
+                            <div>
+                                <span>/</span>
+                            </div>
+                            <div class="flex logout">
+                                <a class="category" href="/logout">Đăng xuất</a>
+                            </div>
+                        </div>
+                        {% else %}
+                        <a class="category" href="#"><i class="fas fa-user"></i></a>
+                        <div class="flex menu-user">
+                            <div class="flex">
+                                <a class="category" href="/login_register">Đăng ký</a>
+                            </div>
+                            <div>
+                                <span>/</span>
+                            </div>
+                            <div class="flex" id="login">
+                                <a class="category" href="/login_register">Đăng nhập</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</header>
+{% endblock %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+<div class="container py-3 px-4">
+    <div class="row rounded-lg overflow-hidden shadow">
+        <!-- Users box-->
+        <div class="col-5 px-0">
+            <div class="bg-white">
+                <div class="bg-gray px-4 py-2 bg-light">
+                    <p class="h5 mb-0 py-1">Recent</p>
+                </div>
+
+                <div class="messages-box">
+                    <div class="list-group rounded-0">
+                        {% if conversations %}
+                        {% for i in range(num_conversations) %}
+                        {% if conversations[i].user_receive.id != current_user.id %}
+                        <a href="/chat/{{conversations[i].id}}"
+                            class="select-room {{conversations[i].id}} list-group-item list-group-item-action list-group-item-light rounded-0">
+                            <div class="media">
+                                <img src="{{conversations[i].user_receive.avatar}}" alt="user" width="50"
+                                    class="rounded-circle">
+                                <div class="media-body ml-4">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        {% if conversations[i].user_receive.user_role == admin%}
+                                        <h6 class="mb-0">{{conversations[i].user_receive.name}}<sup
+                                                style="color: yellow;"><i class="fas fa-crown"></i></sup></h6>
+                                        {%else %}
+                                        <h6 class="mb-0">{{conversations[i].user_receive.name}}</h6>
+                                        {% endif %}
+                                        <small class="small font-weight-bold">{{last_messages[i].created_at}}</small>
+                                    </div>
+                                    {% if last_messages[i].sent_from == current_user.id %}
+                                    <p class="mes-{{conversations[i].id}} font-italic text-muted mb-0 text-small">You:
+                                        {{last_messages[i].message}}</p>
+                                    {% else %}
+                                    {% if last_messages[i].is_seen %}
+                                    <p class="mes-{{conversations[i].id}} font-italic text-muted mb-0 text-small">
+                                        {{last_messages[i].message}}</p>
+                                    {% else %}
+                                    <p
+                                        class="mes-{{conversations[i].id}} font-italic text-muted mb-0 text-small font-weight-bold">
+                                        {{last_messages[i].message}}</p>
+                                    {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                        {% else %}
+                        <a href="/chat/{{conversations[i].id}}"
+                            class="select-room {{conversations[i].id}} list-group-item list-group-item-action list-group-item-light rounded-0">
+                            <div class="media">
+                                <img src="{{conversations[i].user_send.avatar}}" alt="user" width="50"
+                                    class="rounded-circle">
+                                <div class="media-body ml-4">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        {% if conversations[i].user_send.user_role == admin%}
+                                        <h6 class="mb-0">{{conversations[i].user_send.name}}<sup
+                                                style="color: yellow;"><i class="fas fa-crown"></i></sup></h6>
+                                        {%else %}
+                                        <h6 class="mb-0">{{conversations[i].user_send.name}}</h6>
+                                        {% endif %}
+                                        <small class="small font-weight-bold">{{last_messages[i].created_at}}</small>
+                                    </div>
+                                    {% if last_messages[i].sent_from == current_user.id %}
+                                    <p class="mes-{{conversations[i].id}} font-italic text-muted mb-0 text-small">You:
+                                        {{last_messages[i].message}}</p>
+                                    {% else %}
+                                    {% if last_messages[i].is_seen %}
+                                    <p class="mes-{{conversations[i].id}} font-italic text-muted mb-0 text-small">
+                                        {{last_messages[i].message}}</p>
+                                    {% else %}
+                                    <p
+                                        class="mes-{{conversations[i].id}} font-italic text-muted mb-0 text-small font-weight-bold">
+                                        {{last_messages[i].message}}</p>
+                                    {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+                        {% else %}
+                        <p style="text-align:center; line-height: 445px;"> Không có tin nhắn nào trước đó</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Box-->
+        <div class="col-7 px-0">
+            <div id="chat-box" class="px-4 py-5 chat-box bg-white">
+                <p id="none-conservation" style="text-align:center; line-height: 445px;">Chọn đoạn chat để xem!</p>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<p>Vui lòng <a href="/login-register?next=/chat">đăng nhập</a> để tham gia chat!</p>
+{% endif %}
+{% endblock %}
+{% block footer %}
+<p></p>
+{% endblock %}
+
+{% block js %}
+<script>
+    const userSendId = `{{user_send_id}}`;
+    const userSendAvatar = `{{user_send_avatar}}`;
+</script>
+{% endblock %}

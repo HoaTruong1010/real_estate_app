@@ -1,0 +1,516 @@
+{% extends "/layout/base.html" %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block header %}
+<header>
+    <div class="main-menu">
+        <img src="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076219/FlightMangement/logo_komha6.png"
+            alt="logo">
+
+        <div class="menu">
+            <ul class="flex menu-items">
+                <li class="mr-2">
+                    <form method="get" class="d-flex justify-content-center h-100 " id="search-form" autocomplete="on">
+                        <div class="searchbar d-flex justify-content-between align-items-center">
+                            {% if parameters['issales'] == 'true' %}
+                            <select class="selectpicker" id="issales">
+                                <option selected value="true">Cần mua</option>
+                                <option value="false">Cần thuê</option>
+                            </select>
+                            {%else%}
+                            <select class="selectpicker" id="issales">
+                                <option value="true">Cần mua</option>
+                                <option selected value="false">Cần thuê</option>
+                            </select>
+                            {%endif%}
+
+                            {% if parameters['q'] %}
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..."
+                                value="{{parameters['q']}}">
+                            {%else%}
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..." value="">
+                            {%endif%}
+                            <a href="#" id="search_btn" class="search_icon"><i class="fas fa-search"></i></a>
+                        </div>
+                    </form>
+                </li>
+                <li id="home">
+                    <a class="category" href="/">Trang chủ</a>
+                </li>
+                <li id="sales">
+                    <div class="btn-group dropright">
+                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Mua bán
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/sales/all">Tất cả</a></li>
+                            {% for c in sales_cate %}
+                            <li><a class="dropdown-item" href="/sales/{{c['id']}}">{{c.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li id="rents">
+                    <div class="btn-group dropright">
+                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            Cho thuê
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/rents/all">Tất cả</a></li>
+                            {% for c in rent_cate %}
+                            <li><a class="dropdown-item" href="/rents/{{c['id']}}">{{c.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li id="contact">
+                    <a class="category" href="#">Liên hệ</a>
+                </li>
+                <li>
+                    <div class="user">
+                        {% if current_user.is_authenticated %}
+                        <a class="category" href="/profile/{{current_user_id}}"><i class="fas fa-user"></i></a>
+                        <div class="flex menu-user">
+                            <div class="flex" id="profile">
+                                <a class="category" href="/profile/{{current_user_id}}">Hồ sơ</a>
+                            </div>
+                            <div>
+                                <span>/</span>
+                            </div>
+                            <div class="flex logout">
+                                <a class="category" href="/logout">Đăng xuất</a>
+                            </div>
+                        </div>
+                        {% else %}
+                        <a class="category" href="#"><i class="fas fa-user"></i></a>
+                        <div class="flex menu-user">
+                            <div class="flex">
+                                <a class="category" href="/login_register">Đăng ký</a>
+                            </div>
+                            <div>
+                                <span>/</span>
+                            </div>
+                            <div class="flex" id="login">
+                                <a class="category" href="/login_register">Đăng nhập</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</header>
+{% endblock %}
+{% block content %}
+{% if current_user.is_authenticated %}
+<section class="row">
+    <form class="col-3" method="post">
+        <div class="card">
+            <img class="card-img-top" src="{{user.avatar}}" alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">{{user.name}}</h5>
+                <div class="rating mb-3">
+                    <div class="rating__overlay" id="rating__medium">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="rating__base">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                {% if user.description %}
+                <p><small>{{user.description}}</small></p>
+                {%endif%}
+
+            </div>
+        </div>
+    </form>
+    <form method="post" class="col-9">
+        <div class="header row">
+            {% if user.id == current_user.id %}
+            <a href="javascript:void(0)" id="all-reviewes" class="active col-4">Tất cả đánh giá</a>
+            <a href="javascript:void(0)" id="waiting-review" class="col-4">Chờ đánh giá</a>
+            <a href="javascript:void(0)" id="reviewed" class="col-4">Đã đánh giá</a>
+            {% else %}
+            {% if accept_review %}
+            <a href="javascript:void(0)" id="all-reviewes" class="active col-6">Tất cả đánh giá</a>
+            <a href="javascript:void(0)" id="review" class="col-6">Viết đánh giá</a>
+            {%else%}
+            <a href="javascript:void(0)" id="all-reviewes" class="active col-12">Tất cả đánh giá</a>
+            {%endif%}
+            {% endif %}
+        </div>
+
+        {% if err_msg.__eq__(-1)%}
+        <div class="alert alert-danger">
+            Đã có lỗi xảy ra, vui lòng thử lại!
+        </div>
+        {% endif %}
+        {% if user.id == current_user.id %}
+        {% if user_reviews %}
+        <div class="all-reviewes" style="margin-top: 50px;">
+            <div class="d-flex flex-wrap justify-content-between"
+                style="width: 100% !important; height: auto; border: solid 1px #ccc; border-radius: 5px;">
+                {% for review in user_reviews %}
+                <div class="px-3 py-3" style="width: 100% !important; height: 100%;">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center col-md-6">
+                            <a href="javascript:;" class="avatar rounded-circle mr-3">
+                                <img alt="Image placeholder" src="{{review.user_review.avatar}}">
+                            </a>
+                            <div>
+                                <h3 class="overflow mr-3" style="font-size:15px;">{{review.user_review.name}}</h3>
+                                <div class="rating">
+                                    <div class="rating__overlay rating__number {{review.rating}}">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="rating__base">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mb-0" style="margin-right: 15px;">
+                            <span class="publish_date">{{review.review_at}}</span>
+                        </p>
+                    </div>
+                    {% if review.content %}
+                    <textarea class="date mt-3" id="content-reviewed" style="width: calc(100% - 30px); margin: 0px 15px;"
+                        disabled>{{review.content}}</textarea>
+                    {%endif%}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {%else%}
+        <div class="alert alert-danger all-reviewes" style="margin-top:50px;">
+            Không có đánh giá nào được tìm thấy!
+        </div>
+        {%endif%}
+        {% if waiting_reviews %}
+        <div class="flex handbook-content waiting-review" style="margin-top: 50px;">
+            <div class="d-flex flex-wrap justify-content-between handbook-items" id="handbook-items"
+                style="width: 100%;">
+                {% for i in range(waiting_reviews.__len__()) %}
+                {% if waiting_reviews[i].user_receive.id != current_user.id %}
+                <div class="d-flex justify-content-between handbook-item"
+                    style="width: 100% !important; height: 100px;">
+                    <div class="col30 handbook-img item{{waiting_reviews[i].id}}-c3 flex" id="{{waiting_reviews[i].id}}"
+                        style="height: 100%;">
+                        <img class="img" src="{{waiting_reviews[i].user_receive.avatar}}" alt="" />
+                    </div>
+                    <div class="col70 handbook-info item-c7 row justify-content-start align-items-center"
+                        style="height: 100%; padding: 0;">
+                        <div class="d-flex justify-content-between col-md-11" style="padding: 0;">
+                            <h3 class="overflow" style="font-size:15px;">{{waiting_reviews[i].user_receive.name}}</h3>
+                            <p><i class="fas fa-comment-dots text-muted"></i>
+                                <span>{{waiting_reviews[i].updated_at}}</span>
+                            </p>
+                        </div>
+                        <a class="btn btn-warning col-md-3" href="/review/{{user_id_list[i]}}"
+                            style="font-size: 13px; width: 100px; height: 30px; line-height: 15px;">
+                            Đánh giá
+                        </a>
+                        </a>
+                    </div>
+                </div>
+                {%else%}
+                <div class="flex1 handbook-item" style="width: 100% !important; height: 100px;">
+                    <div style="height: 100%;" class="col30 handbook-img item{{waiting_reviews[i].id}}-c3 flex"
+                        id="{{waiting_reviews[i].id}}">
+                        <img class="img" src="{{waiting_reviews[i].user_send.avatar}}" alt="" />
+                    </div>
+                    <div class="col70 handbook-info item-c7 row justify-content-start align-items-center"
+                        style="height: 100%;">
+                        <div class="d-flex justify-content-between col-md-12">
+                            <h3 class="overflow" style="font-size:15px;">{{waiting_reviews[i].user_send.name}}</h3>
+                            <p><i class="fas fa-comment-dots text-muted"></i>
+                                <span>{{waiting_reviews[i].updated_at}}</span>
+                            </p>
+                        </div>
+                        <a class="btn btn-warning col-md-12" href="/review/{{user_id_list[i]}}"
+                            style="font-size: 13px; width: 100px; height: 30px; line-height: 15px;">
+                            Đánh giá
+                        </a>
+                        </a>
+                    </div>
+                </div>
+                {%endif%}
+                {% endfor %}
+            </div>
+        </div>
+        {%else%}
+        <div class="alert alert-danger waiting-review" style="margin-top:50px;">
+            Không có đánh giá nào được tìm thấy!
+        </div>
+        {%endif%}
+
+        {% if reviewed_list %}
+        <div class="reviewed" style="margin-top: 50px;">
+            <div class="d-flex flex-wrap justify-content-between"
+                style="width: 100% !important; height: auto; border: solid 1px #ccc; border-radius: 5px;">
+                {% for review in reviewed_list %}
+                <div class="px-3 py-3" style="width: 100% !important; height: 100%;">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center col-md-6">
+                            <a href="javascript:;" class="avatar rounded-circle mr-3">
+                                <img alt="Image placeholder" src="{{review.publisher_review.avatar}}">
+                            </a>
+                            <div>
+                                <h3 class="overflow mr-3" style="font-size:15px;">{{review.publisher_review.name}}</h3>
+                                <div class="rating">
+                                    <div class="rating__overlay rating__number {{review.rating}}">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="rating__base">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mb-0" style="margin-right: 15px;">
+                            <span class="publish_date">{{review.review_at}}</span>
+                        </p>
+                    </div>
+                    {% if review.content %}
+                    <textarea class="date mt-3" id="content-reviewed" style="width: calc(100% - 30px); margin: 0px 15px;"
+                        disabled>{{review.content}}</textarea>
+                    {%endif%}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {%else%}
+        <div class="alert alert-danger reviewed" style="margin-top:50px;">
+            Không có đánh giá nào được tìm thấy!
+        </div>
+        {%endif%}
+        {%else%}
+        {% if user_reviews %}
+        <div class="all-reviewes" style="margin-top: 50px;">
+            <div class="d-flex flex-wrap justify-content-between"
+                style="width: 100% !important; height: auto; border: solid 1px #ccc; border-radius: 5px;">
+                {% for review in user_reviews %}
+                <div class="px-3 py-3" style="width: 100% !important; height: 100%;">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center col-md-6">
+                            <a href="javascript:;" class="avatar rounded-circle mr-3">
+                                <img alt="Image placeholder" src="{{review.user_review.avatar}}">
+                            </a>
+                            <div>
+                                <h3 class="overflow mr-3" style="font-size:15px;">{{review.user_review.name}}</h3>
+                                <div class="rating">
+                                    <div class="rating__overlay rating__number {{review.rating}}">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="rating__base">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mb-0" style="margin-right: 15px;">
+                            <span class="publish_date">{{review.review_at}}</span>
+                        </p>
+                    </div>
+                    {% if review.content %}
+                    <textarea class="date mt-3" id="content-reviewed" style="width: calc(100% - 30px); margin: 0px 15px;"
+                        disabled>{{review.content}}</textarea>
+                    {%endif%}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {%else%}
+        <div class="alert alert-danger all-reviewes" style="margin-top:50px;">
+            Không có đánh giá nào được tìm thấy!
+        </div>
+        {%endif%}
+        {% if accept_review %}
+        <div class="mt-4 review">
+            <div class="form-row d-flex justify-content-center align-items-center">
+                <div class="col-md-12">
+                    <label for="rate" class="d-flex justify-content-center">Trải nghiệm của bạn với {{user.name}} như
+                        thế
+                        nào?</label>
+                    <div class="d-flex justify-content-center">
+                        <div class="rate">
+                            <input type="radio" id="star5" name="rate" value="5" />
+                            <label for="star5" title="text">5 stars</label>
+                            <input type="radio" id="star4" name="rate" value="4" />
+                            <label for="star4" title="text">4 stars</label>
+                            <input type="radio" id="star3" name="rate" value="3" />
+                            <label for="star3" title="text">3 stars</label>
+                            <input type="radio" id="star2" name="rate" value="2" />
+                            <label for="star2" title="text">2 stars</label>
+                            <input type="radio" id="star1" name="rate" value="1" />
+                            <label for="star1" title="text">1 star</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 mb-3" style="margin: 0% 1%;">
+                    <label for="content">Nội dung đánh giá: </label>
+                    <textarea class="form-control" id="content" rows="5" cols="100" name="content"></textarea>
+                </div>
+                <button class="btn btn-primary" style="font-size: 13px; width: 100px; height: 30px; line-height: 15px;"
+                    name="review-btn">Đánh giá</button>
+            </div>
+        </div>
+        {%endif%}
+        {%endif%}
+    </form>
+</section>
+{% else %}
+<p>Vui lòng <a href="/login-register?next=/review/{{user_id}}">đăng nhập </a> để xem hồ sơ!</p>
+{% endif %}
+{% endblock %}
+{% block js %}
+<script>
+    function diffTimes(dateStr) {
+        const unit = ["giây", "phút", "giờ", "ngày", "tháng", "năm"];
+        const date1 = new Date(dateStr);
+        const date2 = new Date();
+        var diffTime = Math.abs(date2 - date1) / 1000;
+        let i = 0;
+        while (true) {
+            if (i < 2) {
+                diffTime = diffTime / 60;
+                i++;
+                if (diffTime < 60) {
+                    break;
+                }
+            } else if (i == 2) {
+                diffTime = diffTime / 24;
+                i++;
+                if (diffTime < 24) {
+                    break;
+                }
+            } else if (i == 3) {
+                diffTime = diffTime / 30;
+                i++;
+                if (diffTime < 30) {
+                    break;
+                }
+            } else if (i == 4) {
+                diffTime = diffTime / 12;
+                i++;
+                if (diffTime < 12) {
+                    break;
+                }
+            }
+            if (i >= 5) {
+                break;
+            }
+        }
+        return `${Math.floor(diffTime)} ${unit[i]} trước`;
+    }
+    window.onload = () => {
+        document.querySelector('#rating__medium').style.width = parseFloat(`{{rating}}`) / 5 * 100 + "%";
+        let allRatings = document.querySelectorAll('.rating__number');
+        if (allRatings) {
+            allRatings.forEach(item => {
+                item.style.width = parseFloat(item.classList[2]) / 5 * 100 + "%";
+            });
+        }
+        var times = document.getElementsByClassName("publish_date");
+        if (times.length > 0) {
+            for (let i = 0; i < times.length; i++) {
+                let time = times[i].textContent;
+                times[i].textContent = diffTimes(time);
+            }
+        }
+    }
+    $(document).ready(function () {
+        $('.all-reviewes').show();
+        $('.reviewed').hide();
+        $('.waiting-review').hide();
+        $('.review').hide();
+        $('#all-reviewes').addClass("active");
+        $('#reviewed').removeClass("active");
+        $('#waiting-review').removeClass("active");
+        $('#review').removeClass("active");
+        $('#all-reviewes').click(function () {
+            $('.all-reviewes').show();
+            $('.reviewed').hide();
+            $('.waiting-review').hide();
+            $('.review').hide();
+            $('#all-reviewes').addClass("active");
+            $('#reviewed').removeClass("active");
+            $('#waiting-review').removeClass("active");
+            $('#review').removeClass("active");
+        })
+        $('#reviewed').click(function () {
+            $('.reviewed').show();
+            $('.all-reviewes').hide();
+            $('.waiting-review').hide();
+            $('.review').hide();
+            $('#reviewed').addClass("active");
+            $('#all-reviewes').removeClass("active");
+            $('#waiting-review').removeClass("active");
+            $('#review').removeClass("active");
+        })
+        $('#waiting-review').click(function () {
+            $('.reviewed').hide();
+            $('.waiting-review').show();
+            $('.all-reviewes').hide();
+            $('.review').hide();
+            $('#reviewed').removeClass("active");
+            $('#waiting-review').addClass("active");
+            $('#all-reviewes').removeClass("active");
+            $('#review').removeClass("active");
+        })
+        $('#review').click(function () {
+            $('.reviewed').hide();
+            $('.waiting-review').hide();
+            $('.all-reviewes').hide();
+            $('.review').show();
+            $('#reviewed').removeClass("active");
+            $('#waiting-review').removeClass("active");
+            $('#all-reviewes').removeClass("active");
+            $('#review').addClass("active");
+        })
+        setTimeout(function () {
+            $('.alert-success').faseOut('fast');
+        }, 5000);
+    });
+</script>
+{% endblock %}

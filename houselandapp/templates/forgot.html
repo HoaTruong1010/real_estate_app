@@ -1,0 +1,157 @@
+<title>{% block title %}Forgot Password{% endblock %}</title>
+<link rel="icon"
+      href="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076213/FlightMangement/icon-web_fgxmmq.png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+
+
+{% if err_msg.__eq__(-2)%}
+<div class="alert alert-danger">
+    Số điện thoại không hợp lệ! Vui lòng kiểm tra lại!
+</div>
+{% endif %}
+{% if err_msg.__eq__(-3)%}
+<div class="alert alert-danger">
+    Mật khẩu không khớp!
+</div>
+{% endif %}
+{% if err_msg.__eq__(-4)%}
+<div class="alert alert-danger">
+    Đã xảy ra lỗi! Vui lòng thử lại!
+</div>
+{% endif %}
+{% if err_msg.__eq__(-5)%}
+<div class="alert alert-danger">
+    Mật khẩu chưa đủ mạnh!
+</div>
+{% endif %}
+<div class="container" id="container">
+    <div class="form-container sign-in-container">
+        <form method="post" enctype="multipart/form-data">
+            <h1>Quên mật khẩu</h1>
+            <div class="infield">
+                <input required id="l_phone" type="number" placeholder="Số điện thoại" name="username"/>
+                <label></label>
+            </div>
+            <div class="infield">
+                <input type="password" required placeholder="Nhập mật khẩu mới" name="password"/>
+                <label></label>
+            </div>
+            <div class="infield">
+                <input type="password" required placeholder="Nhập lại mật khẩu" name="re_password"/>
+                <label></label>
+            </div>
+            <div id="message">
+                <h6>Password must contain the following:</h6>
+                <p id="letter" class="invalid">A <b>lowercase</b> letter</p>
+                <p id="capital" class="invalid">A <b>capital (uppercase)</b> letter</p>
+                <p id="number" class="invalid">A <b>number</b></p>
+                <p id="length" class="invalid">Minimum <b>8 characters</b></p>
+            </div>
+            <button name="forgot">Tiếp theo</button>
+        </form>
+    </div>
+
+    <div class="overlay-container" id="overlayCon">
+        <div class="overlay">
+            <div class="overlay-panel overlay-left">
+                <a href="/"><img
+                        src="https://res.cloudinary.com/doaux2ndg/image/upload/v1670076219/FlightMangement/logo_komha6.png"
+                        alt="logo"></a>
+                <p>Hỗ trợ môi giới toàn quốc!</p>
+                <p>Khám phá ngay!</p>
+                <button>Đăng nhập</button>
+            </div>
+        </div>
+        <a style="color:#fff; text-decoration:none;" href="{{url_for('login_register')}}"><button id="overlayBtn"></button></a>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    const container = document.getElementById('container');
+    const overlayCon = document.getElementById('overlayCon');
+    const overlayBtn = document.getElementById('overlayBtn');
+
+    overlayBtn.addEventListener('click', () => {
+        container.classList.toggle('right-panel-active');
+
+        overlayBtn.classList.remove('btnScaled');
+        window.requestAnimationFrame( () => {
+            overlayBtn.classList.add('btnScaled');
+        })
+    })
+
+    const phoneIp = document.getElementById('l_phone');
+    var value='';
+    phoneIp.addEventListener("keypress", (e) => {
+        if (phoneIp.value.length > 9) {
+            e.preventDefault();
+        }
+        if(e.key == "-" || e.key == "+" || e.key == "e") {
+            e.preventDefault();
+        }
+    })
+
+    var letter = document.getElementById("letter");
+    var capital = document.getElementById("capital");
+    var number = document.getElementById("number");
+    var length = document.getElementById("length");
+    const myInput = document.getElementsByName("password")[0];
+    myInput.addEventListener("keyup", (e) => {
+    // Validate lowercase letters
+    var lowerCaseLetters = /[a-z]/g;
+    var count = 0;
+    if (myInput.value.match(lowerCaseLetters)) {
+        letter.classList.remove("invalid");
+        letter.classList.add("valid");
+        count++;
+    } else {
+        letter.classList.remove("valid");
+        letter.classList.add("invalid");
+        count--;
+    }
+
+    // Validate capital letters
+    var upperCaseLetters = /[A-Z]/g;
+    if (myInput.value.match(upperCaseLetters)) {
+        capital.classList.remove("invalid");
+        capital.classList.add("valid");
+        count++;
+    } else {
+        capital.classList.remove("valid");
+        capital.classList.add("invalid");
+        count--;
+    }
+
+    // Validate numbers
+    var numbers = /[0-9]/g;
+    if (myInput.value.match(numbers)) {
+        number.classList.remove("invalid");
+        number.classList.add("valid");
+        count++;
+    } else {
+        number.classList.remove("valid");
+        number.classList.add("invalid");
+        count--;
+    }
+
+    // Validate length
+    if (myInput.value.length >= 8) {
+        length.classList.remove("invalid");
+        length.classList.add("valid");
+        count++;
+    } else {
+        length.classList.remove("valid");
+        length.classList.add("invalid");
+        count--;
+    }
+})
+</script>

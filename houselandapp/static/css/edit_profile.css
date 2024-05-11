@@ -1,0 +1,154 @@
+.invalid-feedback {
+    display: block !important;
+}
+
+form input[type="text"], input[type="date"] {
+    border: 1px solid lightgray !important;
+}
+
+#forgot {
+    justify-content: center;
+    display: flex;
+    align-items: self-end;
+    height: 100%;
+    padding: 5% 0;
+}
+
+div.card-img-overlay div {
+    position: relative;     
+}
+
+input[name="edit-avatar"]{
+    opacity: 0;
+    z-index: 5;
+    position: absolute;
+    top: 0;
+    cursor: pointer;
+}
+
+input[name="edit-avatar"]:hover {
+    cursor: pointer !important;
+}
+
+button.edit-avatar {
+    background-color: green;
+    width: 40px; 
+    height:40px; 
+    justify-content: center;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    border: 0;
+    border-radius: 5px;
+    color: white;
+}
+
+button[name="delete-avatar-btn"], button[name="delete-avatar-btn"]:hover {
+    background-color: red;
+    width: 40px; 
+    height:40px; 
+    justify-content: center;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    border: 0;
+    border-radius: 5px;
+    color: white;
+}
+
+.card-title {
+    margin-bottom: 0.2rem;
+}
+
+input#phone::-webkit-inner-spin-button,
+input#phone::-webkit-outer-spin-button {
+    display: none;
+}
+
+.valid {
+    color: green;
+    font-weight: 400;
+    margin-bottom: 0.5% !important;
+  }
+  
+  .valid:before {
+    position: relative;
+    left: -15px;
+    content: "✔";
+  }
+  
+  /* Add a red text color and an "x" when the requirements are wrong */
+  .invalid {
+    color: grey;
+    margin-bottom: 0.5% !important;
+  }
+  
+  .invalid:before {
+    position: relative;
+    left: -15px;
+    content: "✖";
+  }
+
+.notice {
+    background-color: rgb(242, 242, 242);
+    padding: 16px 24px;
+    border-radius: 4px;
+    margin-bottom: 5%;
+}
+
+.warning-title {
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    color: rgb(44, 44, 44);
+}
+
+.step{
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    color: rgb(255, 255, 255);
+    background-color: rgb(20, 158, 250);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    max-width: 24px;
+    max-height: 24px;
+    margin-right: 8px;
+}
+
+.warning-content{
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.step-content{
+    font-family: Roboto;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: rgb(44, 44, 44);
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+.label-center{
+    width: 100%; 
+    text-align: center;
+}

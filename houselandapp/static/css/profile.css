@@ -1,0 +1,123 @@
+header {
+    height: 87px;
+}
+
+.menu-user > div > a.category:hover {
+    font-size: 13px;
+    color: darkred;
+}
+
+div.col-8 {
+    border-right: solid 1px lightgrey;
+    border-left: solid 1px lightgrey;
+}
+
+div.header {
+    text-align: center;
+}
+
+div.header a {
+    padding: 10px 0;
+    border: solid 1px lightgrey;
+    transition: 0.6s;
+}
+
+div.header a:hover {
+    background-color: #1e81b0;
+    color: white;
+    text-decoration: none;
+}
+
+.active {
+    background-color: #1e81b0;
+    color: white;
+    transition: 0.6s;
+}
+
+.active:hover {
+    background-color: white !important;
+    color: #1e81b0 !important;
+}
+
+.alert {
+    margin-top: 10px;
+}
+
+.handbook-content {
+    margin-top: 10px !important;
+}
+
+.rate {
+    float: left;
+    height: 46px;
+    padding: 0 10px;
+}
+.rate:not(:checked) > input {
+    position:absolute;
+    top:-9999px;
+}
+.rate:not(:checked) > label {
+    float:right;
+    width:1em;
+    overflow:hidden;
+    white-space:nowrap;
+    cursor:pointer;
+    font-size:30px;
+    color:#ccc;
+}
+.rate:not(:checked) > label:before {
+    content: '★ ';
+}
+.rate > input:checked ~ label {
+    color: #ffc700;    
+}
+.rate:not(:checked) > label:hover,
+.rate:not(:checked) > label:hover ~ label {
+    color: #deb217;  
+}
+.rate > input:checked + label:hover,
+.rate > input:checked + label:hover ~ label,
+.rate > input:checked ~ label:hover,
+.rate > input:checked ~ label:hover ~ label,
+.rate > label:hover ~ input:checked ~ label {
+    color: #c59b08;
+}
+
+
+.rating {
+    display: inline-block;
+    position: relative;
+    line-height: 1em;
+   }
+   
+   .rating__overlay {
+    color: #ffc107;
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  
+  .rating__base {
+    color: #ccc;
+    white-space: nowrap;
+  }
+
+  .avatar {
+    font-size: 1rem;
+    display: inline-flex;
+    width: 48px;
+    height: 48px;
+    color: #fff;
+    border-radius: 50%;
+    background-color: #adb5bd;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
