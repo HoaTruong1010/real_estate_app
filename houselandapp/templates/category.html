@@ -78,6 +78,7 @@
             </div>
             <div class="d-flex flex-wrap justify-content-between handbook-items" id="handbook-items"
                 style="width: 100%;">
+                {% if results %}
                 {% for p in results %}
                 <div class="flex1 handbook-item" style="width: 100% !important;">
                     <div class="col30 handbook-img item{{p['id']}}-c3 flex" id="{{p['id']}}">
@@ -110,6 +111,11 @@
                     </div>
                 </div>
                 {% endfor %}
+                {%else%}
+                <div class="alert alert-danger mb-2" style="margin-top:50px;">
+                    Không có bài viết nào được tìm thấy!
+                </div>
+                {%endif%}
             </div>
         </div>
         <div class="border-left" style="width: 29%; margin-top: 50px; padding-left: 10px;">
@@ -119,7 +125,7 @@
             <div class="py-1">
                 <h6>Địa chỉ</h6>
                 <form class="autocomplete" id="location-form" method="get">
-                    <input type="text" class="d-none" id="latlon" placeholder="Nhập địa chỉ..." disabled >
+                    <input type="text" class="d-none" id="latlon" placeholder="Nhập địa chỉ..." disabled>
                     <div class="d-flex justify-content-start" id="div__location">
                         <input type="text" id="location" placeholder="Nhập địa chỉ..." autocomplete="off">
                         <button type="button"><i class="fas fa-search"></i></button>
@@ -243,21 +249,21 @@
         <ul class="pagination justify-content-end">
             {% if page > 1 %}
             <li class="page-item">
-                <a class="page-link"
-                    href="/{{category_detail_parameters['issale']}}/{{category_detail_parameters['category_id']}}?page={{page-1}}"
+                <a class="{{page-1}} page-link page-number"
+                    href="javascript:void(0)"
                     aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
             {% endif %}
             {% for i in range(1, pages+1) %}
-            <li class="page-item number"><a class="page-link"
-                    href="/{{category_detail_parameters['issale']}}/{{category_detail_parameters['category_id']}}?page={{i}}">{{i}}</a>
+            <li class="page-item number"><a class="{{i}} page-link page-number"
+                    href="javascript:void(0)">{{i}}</a>
             </li>
             {% endfor %}
             {% if page+1 <= pages %} <li class="page-item">
-                <a class="page-link"
-                    href="/{{category_detail_parameters['issale']}}/{{category_detail_parameters['category_id']}}?page={{page+1}}"
+                <a class="{{page+1}} page-link page-number"
+                    href="javascript:void(0)"
                     aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
@@ -272,10 +278,9 @@
         <hr>
         <div class="cards flex justify-content-start" style="flex-wrap: wrap;" id="cards">
             {% for i in range(0, 4) %}
-            <div class="card hint-card">
+            {%if i < viewed_list.__len__()%} <div class="card hint-card">
                 <div class="card-image"><img class="card-img-top" src="{{viewed_list[i].images[0]}}"
-                        alt="Card image cap">
-                </div>
+                        alt="Card image cap"></div>
                 <div class="hint-address">
                     <p><i class="fas fa-map-marker-alt"></i> {{viewed_list[i].address}}
                     </p>
@@ -285,23 +290,24 @@
                     <p><i class="fab fa-windows"></i> <b>Diện tích:</b>
                         {{"{:,}".format(viewed_list[i].area)}}
                         m<sup>2</sup></p>
-                    <p><i class="fas fa-dollar-sign"></i> <b>Giá: </b> <span
+                    <p><i class="fas fa-dollar-sign"></i> Giá: <span
                             class="display-price">{{viewed_list[i].price}}</span>
                     </p>
                     <a href="/posts/{{viewed_list[i].id}}" class="btn btn-primary">Xem bài viết</a>
                 </div>
-            </div>
-            {% endfor %}
         </div>
-        {% if viewed_list.__len__() > 4 %}
-        <div class="w-100 d-flex justify-content-end"><a class="link-offset-2 link-underline link-underline-opacity-25"
-                style="width: 150px; text-underline-offset: 0.25em; font-weight: bold;"
-                href="/profile/{{current_user_id}}?viewed=true" aria-label="Previous">
-                Xem thêm <i class="fas fa-chevron-right"></i>
-            </a></div>
-
         {%endif%}
-        <hr>
+        {% endfor %}
+    </div>
+    {% if viewed_list.__len__() > 4 %}
+    <div class="w-100 d-flex justify-content-end"><a class="link-offset-2 link-underline link-underline-opacity-25"
+            style="width: 150px; text-underline-offset: 0.25em; font-weight: bold;"
+            href="/profile/{{current_user_id}}?viewed=true" aria-label="Previous">
+            Xem thêm <i class="fas fa-chevron-right"></i>
+        </a></div>
+
+    {%endif%}
+    <hr>
     </div>
     {%endif%}
 </section>

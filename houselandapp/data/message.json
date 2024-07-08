@@ -163,7 +163,7 @@
     "id": 27,
     "is_true": true,
     "for": "",
-    "content": "Thành công! \nYêu cầu đăng ký đã bị hủy! \nCảm ơn bạn đã sử dụng dịch vụ của Afforda!"
+    "content": "Hủy đăng ký nhà môi giới thành công!"
 },
 {
     "id": 28,
@@ -295,12 +295,18 @@
     "id": 49,
     "is_true": true,
     "for": "restrict",
-    "content": "Hạn chế quyền thành công!"
+    "content": "Thay đổi quyền thành công!"
 },
 {
     "id": 50,
     "is_true": false,
     "for": "restrict",
     "content": "**Vui lòng chọn ngày kết thúc hợp lệ!"
+},
+{
+    "id": 51,
+    "is_true": false,
+    "for": "login",
+    "content": "**Tài khoản của bạn đang chờ xóa. Vui lòng liên hệ hotline 0399411749 để lấy lại tài khoản!"
 }
 ]

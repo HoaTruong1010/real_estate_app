@@ -12,6 +12,8 @@
         <p style="background-color: #28a745; top: 3em; left: -12%;" class="sold_out">{{post.status.value}}</p>
         {%elif post.status.value in ['Chờ duyệt', 'Đã chỉnh sửa']%}
         <p style="background-color: #007bff;top: 2.5em;; left: -12%;" class="sold_out">{{post.status.value}}</p>
+        {%elif post.status.value in ['Đã cho thuê', 'Đã hết hạn']%}
+        <p style="left: -12%;" class="sold_out">{{post.status.value}}</p>
         {%else%}
         <p class="sold_out">{{post.status.value}}</p>
         {%endif%}
@@ -52,53 +54,56 @@
         <p style="font-size: 13px; margin: 10px 0 0 0px; color: grey; left: 0;">
             #Mã bài viết: {{post.id}}</p>
         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-            {% if duration < 0 or post.status.value in ['Đã cho thuê', 'Đã bán'] %}
-            <p style="font-size: 13px; margin-bottom:0px; color: grey; left: 0;">
+            {% if duration < 0 or post.status.value in ['Đã cho thuê', 'Đã bán' ] %} <p
+                style="font-size: 13px; margin-bottom:0px; color: grey; left: 0;">
                 <i class="fas fa-clock"></i> Đã được duyệt vào lúc {{post.created_at}}
-            </p>
-            {%else%}
-            <p style="font-size: 13px; margin-bottom:0px; color: grey; left: 0;">
-                <i class="fas fa-clock"></i> {{post.status.value}} vào lúc {{post.updated_at}}
-            </p>
-            {%endif%}
+                </p>
+                {%else%}
+                <p style="font-size: 13px; margin-bottom:0px; color: grey; left: 0;">
+                    <i class="fas fa-clock"></i> {{post.status.value}} vào lúc {{post.updated_at}}
+                </p>
+                {%endif%}
 
-            {% if current_user.is_authenticated %}
-            <div>
-                {% if not post in report_list %}
-                <a class="btn btn-outline-warning" href="javascript:;" title="Report"
-                    style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;"
-                    onclick="report(`{{post.id}}`)">
-                    <i class="far fa-flag"></i>
-                </a>
-                {% else %}
-                <a class="btn btn-warning" href="javascript:;" title="Report"
-                    style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;"
-                    onclick="report(`{{post.id}}`)">
-                    <i style="color: white;" class="far fa-flag"></i>
-                </a>
+                {% if current_user.is_authenticated %}
+                <div>
+                    {% if not post in report_list %}
+                    <a class="btn btn-outline-warning" href="javascript:;" title="Report"
+                        style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;"
+                        onclick="report(`{{post.id}}`)">
+                        <i class="far fa-flag"></i>
+                    </a>
+                    {% else %}
+                    <a class="btn btn-warning" href="javascript:;" title="Report"
+                        style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;"
+                        onclick="report(`{{post.id}}`)">
+                        <i style="color: white;" class="far fa-flag"></i>
+                    </a>
+                    {% endif %}
+                    {% if post in saved_list %}
+                    <a class="btn btn-danger {{post.id}}" href="javascript:;" title="Saved"
+                        onclick="reactPost(`{{post.id}}`)"
+                        style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
+                        <i class="far fa-bookmark"></i>
+                    </a>
+                    {% else %}
+                    <a class="btn btn-outline-danger {{post.id}}" href="javascript:;" title="Save"
+                        onclick="reactPost(`{{post.id}}`)"
+                        style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
+                        <i class="far fa-bookmark"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                {%else%}
+                <div>
+                    <a class="btn btn-outline-warning" href="/login_register?next=/posts/{{post.id}}" title="Report"
+                        style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
+                        <i class="far fa-flag"></i>
+                    </a>
+                    <a class="btn btn-outline-danger {{post.id}}" href="/login_register?next=/posts/{{post.id}}"
+                        title="Save" style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
+                        <i class="far fa-bookmark"></i></a>
+                </div>
                 {% endif %}
-                {% if post in saved_list %}
-                <a class="btn btn-danger {{post.id}}" href="javascript:;" title="Saved" onclick="reactPost(`{{post.id}}`)"
-                    style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
-                    <i class="far fa-bookmark"></i>
-                </a>
-                {% else %}
-                <a class="btn btn-outline-danger {{post.id}}" href="javascript:;" title="Save"
-                    onclick="reactPost(`{{post.id}}`)"
-                    style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
-                    <i class="far fa-bookmark"></i>
-                </a>
-                {% endif %}
-            </div>
-            {%else%}
-            <a class="btn btn-outline-warning" href="/login_register?next=/posts/{{post.id}}" title="Report"
-                style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
-                <i class="far fa-flag"></i>
-            </a>
-            <a class="btn btn-outline-danger {{post.id}}" href="/login_register?next=/posts/{{post.id}}" title="Save"
-            style="font-size: 13px; width: 40px; height: 30px; margin: 10px 0 0 10px;">
-            <i class="far fa-bookmark"></i></a>
-            {% endif %}
         </div>
         <hr>
         <p style="color: red;"><i class="fas fa-dollar-sign"></i> <b>Giá:</b> <span
@@ -108,82 +113,83 @@
         <p><i class="fab fa-windows"></i> <b>Diện tích:</b>
             {{"{:,}".format(post.area)}}
             m<sup>2</sup></p>
-        {% if duration < 0%}
-        <p><i class='fas fa-clock'></i> <b>Ngày hết hạn:</b> {{post.expire_at}}</p>
-        {%else%}
-        <p><i class='fas fa-clock'></i> <b>Ngày hết hạn:</b> Còn {{duration}} ngày nữa</p>
-        {%endif%}
-        <hr>
-        <p><i class="fas fa-scroll"></i> <b>Mô tả:</b></p>
-        <textarea cols="80" class="py-2 px-3" rows="10" disabled>{{post.description}}</textarea>
-        <div class="feature">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col"><h5 style="color: darkred;">Đặc điểm bất động sản</h5></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row"><i class="fab fa-windows"></i> Diện tích:</th>
-                        <td>{{"{:,}".format(post.area)}} m<sup>2</sup></td>
-                    </tr>
-                    {% if post.bedrooms != 0 %}
-                    <tr>
-                        <th scope="row"><i class="fas fa-bed"></i> Số lượng phòng ngủ:</th>
-                        <td>{{post.bedrooms}} phòng</td>
-                    </tr>
-                    {% endif %}
-                    {% if post.bathrooms != 0 %}
-                    <tr>
-                        <th scope="row"><i class="fas fa-toilet"></i> Số lượng phòng WC:</th>
-                        <td>{{post.bathrooms}} phòng</td>
-                    </tr>
-                    {% endif %}
+        {% if duration < 0%} <p><i class='fas fa-clock'></i> <b>Ngày hết hạn:</b> {{post.expire_at}}</p>
+            {%else%}
+            <p><i class='fas fa-clock'></i> <b>Ngày hết hạn:</b> Còn {{duration}} ngày nữa</p>
+            {%endif%}
+            <hr>
+            <p><i class="fas fa-scroll"></i> <b>Mô tả:</b></p>
+            <textarea cols="80" class="py-2 px-3" rows="10" disabled>{{post.description}}</textarea>
+            <div class="feature">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                <h5 style="color: darkred;">Đặc điểm bất động sản</h5>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row"><i class="fab fa-windows"></i> Diện tích:</th>
+                            <td>{{"{:,}".format(post.area)}} m<sup>2</sup></td>
+                        </tr>
+                        {% if post.bedrooms != 0 %}
+                        <tr>
+                            <th scope="row"><i class="fas fa-bed"></i> Số lượng phòng ngủ:</th>
+                            <td>{{post.bedrooms}} phòng</td>
+                        </tr>
+                        {% endif %}
+                        {% if post.bathrooms != 0 %}
+                        <tr>
+                            <th scope="row"><i class="fas fa-toilet"></i> Số lượng phòng WC:</th>
+                            <td>{{post.bathrooms}} phòng</td>
+                        </tr>
+                        {% endif %}
 
-                    {% if post.floor != 0 %}
-                    <tr>
-                        <th scope="row"><i class="fas fa-building"></i> Số tầng:</th>
-                        <td>{{post.floor}} tầng</td>
-                    </tr>
-                    {% endif %}
-                    <tr>
-                        <th scope="row"><i class="fas fa-dollar-sign"></i> Giá:</th>
-                        <td><span class="display-price">{{post.price}}</span>{%if not
-                            post.issales%}<span>/tháng</span>{%endif%}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><i class="fas fa-bookmark"></i> Danh mục:</th>
-                        <td>{{issales}} {{cate_name}}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><i class="fas fa-scroll"></i> Giấy tờ pháp lý:</th>
-                        <td>{{post.policy}}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><i class="fas fa-tag"></i> Loại hình BĐS:</th>
-                        <td>{{post.type}}</td>
-                    </tr>
-                    {% if post.direction %}
-                    <tr>
-                        <th scope="row"><i class="fas fa-directions"></i> Hướng:</th>
-                        <td>{{post.direction}} </td>
-                    </tr>
-                    {% endif %}
-                    {% if post.furniture %}
-                    <tr>
-                        <th scope="row"><i class="fas fa-couch"></i> Tình trạng nội thất:</th>
-                        <td>{{post.furniture}}</td>
-                    </tr>
-                    {% endif %}
-                </tbody>
-            </table>
-        </div>
-        
-        <h5 style="color: darkred;">Địa điểm bất động sản</h5>
-        <div class="d-flex justify-content-center">
-            <div id="map" style="width: 100%; height: 400px;" ></div>
-        </div>
+                        {% if post.floor != 0 %}
+                        <tr>
+                            <th scope="row"><i class="fas fa-building"></i> Số tầng:</th>
+                            <td>{{post.floor}} tầng</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th scope="row"><i class="fas fa-dollar-sign"></i> Giá:</th>
+                            <td><span class="display-price">{{post.price}}</span>{%if not
+                                post.issales%}<span>/tháng</span>{%endif%}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><i class="fas fa-bookmark"></i> Danh mục:</th>
+                            <td>{{issales}} {{cate_name}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><i class="fas fa-scroll"></i> Giấy tờ pháp lý:</th>
+                            <td>{{post.policy}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><i class="fas fa-tag"></i> Loại hình BĐS:</th>
+                            <td>{{post.type}}</td>
+                        </tr>
+                        {% if post.direction %}
+                        <tr>
+                            <th scope="row"><i class="fas fa-directions"></i> Hướng:</th>
+                            <td>{{post.direction}} </td>
+                        </tr>
+                        {% endif %}
+                        {% if post.furniture %}
+                        <tr>
+                            <th scope="row"><i class="fas fa-couch"></i> Tình trạng nội thất:</th>
+                            <td>{{post.furniture}}</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <h5 style="color: darkred;">Địa điểm bất động sản</h5>
+            <div class="d-flex justify-content-center">
+                <div id="map" style="width: 100%; height: 400px;"></div>
+            </div>
     </div>
 
     <div class="user-card col-4">
@@ -192,28 +198,40 @@
             <div class="card-body">
                 <h5 style="color: darkcyan;" class="card-title">{{author.name}}</h5>
                 <p class="card-text"><i class="fas fa-mobile"></i> {{author.phone}}</p>
-                <a href="javascript:;" onclick="create(`{{current_user.id}}`, `{{author.id}}`)" class="btn btn-success">Nhắn
+                <a href="javascript:;" onclick="create(`{{current_user.id}}`, `{{author.id}}`)"
+                    class="btn btn-success">Nhắn
                     tin</a>
                 <a href="/profile/{{author_id}}" class="btn btn-primary mt-2">Xem trang cá nhân</a>
             </div>
         </div>
+        {% if current_user.user_role == admin and (post.status.value == "Chờ duyệt" or post.status.value == "Đã chỉnh sửa") %}
+        <div class="mt-5">
+            <h5 style="color: red;" class="card-title">DUYỆT BÀI VIẾT</h5>
+            <div class="d-flex justify-content-between" style="width: 18rem;">
+                <a href="javascript:void(0)" onclick="actionPost(`accept`, `{{post.id}}`)"
+                    class="btn btn-primary mr-3">Duyệt</a>
+                <a href="javascript:void(0)" onclick="actionPost(`delete`, `{{post.id}}`)" class="btn btn-danger">Từ chối</a>
+            </div>
+        </div>
+        {%endif%}
         {% if all_reports and current_user.user_role == admin %}
         <div class="mt-5">
             <h5 style="color: red;" class="card-title">BÁO CÁO</h5>
             <div class="d-flex justify-content-between" style="width: 18rem;">
+                <a href="javascript:void(0)" onclick="action(`recovery`, `{{post.id}}`)" class="btn btn-primary mr-3">Bỏ
+                    qua báo cáo</a>
+                <a href="javascript:void(0)" onclick="action(`hide`, `{{post.id}}`)" class="btn btn-danger">Ẩn bài
+                    viết</a>
             </div>
             {% for i in range(0, all_reports.__len__()) %}
             <div class="card mt-3" style="width: 18rem;">
                 <div class="card-body">
-                  <h5 class="card-title">{{usr_reports[i].name}} (ID: {{usr_reports[i].id}})</h5>
-                  <h6 class="card-subtitle mb-2 text-muted">{{all_reports[i].date_report}}</h6>
-                  <p class="card-text">{{all_reports[i].content}}</p>
-                  {% if all_reports[i].date_handle %}
-                  <p href="javascript:void(0)"class="mt-3 text-danger">Đã xử lý ({{all_reports[i].date_handle}})</p>
-                  {%else%}
-                  <a href="javascript:void(0)" onclick="action(`{{all_reports[i].user_id}}`, 'recovery', `{{post.id}}`)" class="card-link">Khôi phục bài viết</a>
-                  <a href="javascript:void(0)" onclick="action(`{{all_reports[i].user_id}}`, 'hide', `{{post.id}}`)" class="card-link text-danger">Ẩn bài viết</a>
-                  {% endif %}
+                    <h5 class="card-title">{{usr_reports[i].name}} (ID: {{usr_reports[i].id}})</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{all_reports[i].date_report}}</h6>
+                    <p class="card-text">{{all_reports[i].content}}</p>
+                    {% if all_reports[i].date_handle %}
+                    <p href="javascript:void(0)" class="mt-3 text-danger">Đã xử lý ({{all_reports[i].date_handle}})</p>
+                    {% endif %}
                 </div>
             </div>
             {%endfor%}
@@ -233,14 +251,16 @@
     <hr>
 </div>
 
-{% if author_posts %}
+{% if author_posts.__len__() > 0 %}
 <div class="hint">
     <h4 style="color: goldenrod;">Tin đăng khác của {{author.name}}</h4>
     <hr>
     <div class="cards flex justify-content-start" style="flex-wrap: wrap;" id="cards">
         {% for i in range(0, 4) %}
+        {% if i <= author_posts.__len__() %}
         <div class="card hint-card">
-            <div class="card-image"><img class="card-img-top" src="{{author_posts[i].images[0]}}" alt="Card image cap"></div>
+            <div class="card-image"><img class="card-img-top" src="{{author_posts[i].images[0]}}" alt="Card image cap">
+            </div>
             <div class="hint-address">
                 <p><i class="fas fa-map-marker-alt"></i> {{author_posts[i].address}}
                 </p>
@@ -255,13 +275,16 @@
                 <a href="/posts/{{author_posts[i].id}}" class="btn btn-primary">Xem bài viết</a>
             </div>
         </div>
+        {%endif%}
         {% endfor %}
     </div>
     {% if author_posts.__len__() > 4 %}
-    <div class="w-100 d-flex justify-content-end"><a class="link-offset-2 link-underline link-underline-opacity-25" style="width: 150px; text-underline-offset: 0.25em; font-weight: bold;" href="/profile/{{author_id}}" aria-label="Previous">
-        Xem thêm <i class="fas fa-chevron-right"></i>
-    </a></div>
-    
+    <div class="w-100 d-flex justify-content-end"><a class="link-offset-2 link-underline link-underline-opacity-25"
+            style="width: 150px; text-underline-offset: 0.25em; font-weight: bold;" href="/profile/{{author_id}}"
+            aria-label="Previous">
+            Xem thêm <i class="fas fa-chevron-right"></i>
+        </a></div>
+
     {%endif%}
     <hr>
 </div>
@@ -273,9 +296,9 @@
     <hr>
     <div class="cards flex justify-content-start" style="flex-wrap: wrap;" id="cards">
         {% for i in range(0, 4) %}
-        {%if i < viewed_list.__len__()%}
-        <div class="card hint-card">
-            <div class="card-image"><img class="card-img-top" src="{{viewed_list[i].images[0]}}" alt="Card image cap"></div>
+        {%if i < viewed_list.__len__()%} <div class="card hint-card">
+            <div class="card-image"><img class="card-img-top" src="{{viewed_list[i].images[0]}}" alt="Card image cap">
+            </div>
             <div class="hint-address">
                 <p><i class="fas fa-map-marker-alt"></i> {{viewed_list[i].address}}
                 </p>
@@ -285,21 +308,23 @@
                 <p><i class="fab fa-windows"></i> <b>Diện tích:</b>
                     {{"{:,}".format(viewed_list[i].area)}}
                     m<sup>2</sup></p>
-                <p><i class="fas fa-dollar-sign"></i> Giá:  <span class="display-price">{{viewed_list[i].price}}</span>
+                <p><i class="fas fa-dollar-sign"></i> Giá: <span class="display-price">{{viewed_list[i].price}}</span>
                 </p>
                 <a href="/posts/{{viewed_list[i].id}}" class="btn btn-primary">Xem bài viết</a>
             </div>
-        </div>
-        {%endif%}
-        {% endfor %}
     </div>
-    {% if viewed_list.__len__() > 4 %}
-    <div class="w-100 d-flex justify-content-end"><a class="link-offset-2 link-underline link-underline-opacity-25" style="width: 150px; text-underline-offset: 0.25em; font-weight: bold;" href="/profile/{{current_user_id}}?viewed=true" aria-label="Previous">
+    {%endif%}
+    {% endfor %}
+</div>
+{% if viewed_list.__len__() > 4 %}
+<div class="w-100 d-flex justify-content-end"><a class="link-offset-2 link-underline link-underline-opacity-25"
+        style="width: 150px; text-underline-offset: 0.25em; font-weight: bold;"
+        href="/profile/{{current_user_id}}?viewed=true" aria-label="Previous">
         Xem thêm <i class="fas fa-chevron-right"></i>
     </a></div>
-    
-    {%endif%}
-    <hr>
+
+{%endif%}
+<hr>
 </div>
 {%endif%}
 {% endblock %}
@@ -311,10 +336,43 @@
 <script src="{{ url_for('static', filename='js/report.js') }}"></script>
 <script src="{{ url_for('static', filename='js/new_conversation.js') }}"></script>
 <script>
+    function actionPost(actionName, postId) {
+        var is_action = false;
+        if (actionName == "accept") {
+            if (confirm("Bạn có chắc chắn duyệt bài viết?") == true) {
+                is_action = true;
+            } else {
+                is_action = false;
+            }
+        }
+        if (actionName == "delete") {
+            if (confirm("Bạn có chắc chắn xóa bài viết?\nLưu ý: Hành động này sẽ xóa bài viết vĩnh viễn") == true) {
+                is_action = true;
+            } else {
+                is_action = false;
+            }
+        }
+        if (is_action) {
+            fetch("/api/action_post/" + actionName + "/" + postId, {
+                method: "post"
+            }).then(res => res.json())
+                .then(data => {
+                    if (data.status == 200) {
+                        alert("Thành công!");
+                    }
+                    else {
+                        alert("Đã có lỗi xảy ra!\nVui lòng thử lại sau!");
+                    }
+                    location.reload();
+                }).catch(err => {
+                    console.error(err);
+                });
+        }
+    }
     window.onload = function () {
         $("html, body").animate(
             {
-            scrollTop: 730,
+                scrollTop: 730,
             },
             1000
         );

@@ -59,7 +59,8 @@ function loadDataRows(status) {
         method: "post"
     }).then(res => res.json())
     .then(data => {
-        var tableRow = ''
+        var tableRow = '';
+        document.getElementById("total").textContent = data.data.length;
         if (data.data.length > 0) {
             dataRows = data.data
             data.data.forEach(item => {

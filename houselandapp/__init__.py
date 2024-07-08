@@ -20,8 +20,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = 'afforda2002@gmail.com'
-app.config['MAIL_PASSWORD'] = 'uvqhfyzvmwxmzrvs'
-app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_PASSWORD'] = 'vijxvvelqybqziym'
 app.config['MAIL_USE_SSL'] = True
 app.config['PAGE_SIZE'] = 8
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
@@ -45,7 +44,7 @@ db = SQLAlchemy(app=app)
 login = LoginManager(app=app)
 mail = Mail(app)
 socketio = SocketIO(app)
-es = Elasticsearch("http://localhost:9200", basic_auth=("elastic", app.config['ELASTIC_PASSWORD']))
+es = Elasticsearch("https://1b3416f1a7e84732b3f4b3d3a61672e3.us-central1.gcp.cloud.es.io:9243", api_key='YWFhME5wQUJDUTNteEtZNDBOTXY6V3c1cDdoTm9SZU9EYjRVcnlLLVBidw==')
 index_name = "house_land_index"
 if not es.indices.exists(index=index_name):
     # es.indices.delete(index=index_name)

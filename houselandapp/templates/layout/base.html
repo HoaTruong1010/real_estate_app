@@ -149,6 +149,7 @@
                 else {
                     $("form#search-form").attr('action', `/rents/all?q=${q}`);
                 }
+                $("form#search-form").submit();
             });
 
             const href = window.location.href.split("/");

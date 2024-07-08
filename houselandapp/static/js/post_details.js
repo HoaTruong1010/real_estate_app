@@ -161,8 +161,8 @@ function showPagination(pId, index, length, limit) {
     }
     $("#hint").html(pageNavigation);
 }
-
-function action(userReportId, actionName, postId) {
+// document.addEventListener('contextmenu', event => event.preventDefault());
+function action(actionName, postId) {
     var is_action = false;
     
     if (actionName == "hide") {
@@ -181,7 +181,7 @@ function action(userReportId, actionName, postId) {
         }
     }
     if (is_action) {
-        fetch("/api/handle_report/" + userReportId + "/" + actionName + "/" + postId, {
+        fetch("/api/handle_report/" + actionName + "/" + postId, {
             method: "post"
         }).then(res => res.json())
         .then(data => {

@@ -16,10 +16,13 @@ if (delAccount){
     delAccount.addEventListener('click', ()=>{
         let content = 'Bạn có chắc chắn xóa tài khoản này không?';
         if(confirm(content) == true) {
+            let submitDeleteAcc = document.getElementById("del-acc");
+            if (submitDeleteAcc) {
+                submitDeleteAcc.submit();
+            }
             socket.emit("handle_notify", {
                 'type': 'delete'
             });
-            delAvatarPrimary.click();
         }
     });
 }

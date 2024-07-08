@@ -3,17 +3,17 @@ import json
 import cloudinary.uploader
 from houselandapp import db, fernet, es, index_name
 from models import *
-from sqlalchemy import extract, func, or_, and_
+from sqlalchemy import extract, func, or_, and_, distinct
 from avatar_generator import Avatar
 from werkzeug.utils import secure_filename
-import os
+import os, math
 from dotenv import load_dotenv
-import requests
+import requests, csv
 from securable_data import *
 from flask import jsonify
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import Counter
-from underthesea import word_tokenize
+import pandas as pd
 
 load_dotenv()
 
@@ -226,6 +226,15 @@ def load_user_by_kw(kw='all'):
                     .order_by(User.date_created.desc()).all()
 
 
+def request_delete_user(id):
+    user = User.query.get(id)
+    if user:
+        user.user_role = UserRoleEnum.WAITING_DELETE
+        db.session.commit()
+        return 1
+    return 0
+
+
 def recovery_user(id):
     user = User.query.get(id)
     user.active = True
@@ -259,7 +268,7 @@ def get_identifier_by_id_code(id_code):
 
 
 def add_identifier(user_id, id_code, full_name, gender, dob, address, register_date, at, expire_at):
-    i = get_identifier_by_id_code(id_code)
+    i = get_identifier_by_id_code(encrypt_data_no2(id_code))
     if i:
         recovery_user(user_id)
         return 29
@@ -269,7 +278,7 @@ def add_identifier(user_id, id_code, full_name, gender, dob, address, register_d
     gender = True if gender.strip().lower()=="nữ" else False
     identifier = Identifier(user_id=user_id, id_code=id_code, full_name=full_name, gender=gender, 
                             dob=dob, address=address, register_date=register_date, at=at, expire_at=expire_at,
-                            restrict_from=datetime.now(), restrict_to=datetime.now(), accept_at=None)
+                            restrict_from=datetime.now().strftime("%Y-%m-%dT%H:%M"), restrict_to=datetime.now().strftime("%Y-%m-%dT%H:%M"), accept_at=None)
     db.session.add(identifier)
     db.session.commit()
     return 23
@@ -306,11 +315,11 @@ def restrict_user(user_id, restrict_from, restrict_to):
     db.session.commit()
 
 
-def handle_report(user_id, post_id, status):
-    report = Reports.query.filter(Reports.user_id == user_id, Reports.post_id == post_id).first()
-    if report:
-        report.status = status
-        report.date_handle = datetime.now()
+def handle_report(post_id, status):
+    report = Reports.query.filter(Reports.post_id == post_id, Reports.status == "Chưa xử lý").all()
+    for r in report:
+        r.status = status
+        r.date_handle = datetime.now()
         db.session.commit()
 
 
@@ -353,7 +362,7 @@ def load_posts_by_status(status='All'):
                     .order_by(Posts.created_at.desc()).all()
     elif status == "Đã bị ẩn":
         posts = db.session.query(Posts.id, Posts.title, Posts.created_at, Posts.updated_at,
-                            Posts.status.value, User.avatar, User.name)\
+                            Posts.status, User.avatar, User.name)\
                     .join(User, Posts.user_id == User.id)\
                     .filter(Posts.status == PostsStatusEnum.HIDDEN)\
                     .order_by(Posts.created_at.desc()).all()
@@ -395,6 +404,10 @@ def load_posts_by_status_v2(status=PostsStatusEnum.ACCEPTED, user_id=None):
     if user_id:
         if status == PostsStatusEnum.WAITING:
             return Posts.query.filter(Posts.status.in_((PostsStatusEnum.WAITING, PostsStatusEnum.EDITED, PostsStatusEnum.HIDDEN)))\
+                .filter(Posts.user_id == user_id).order_by(Posts.created_at.desc()).all()
+        
+        if status == "profile":
+            return Posts.query.filter(Posts.status.in_((PostsStatusEnum.ACCEPTED, PostsStatusEnum.SOLD, PostsStatusEnum.RENTED)))\
                 .filter(Posts.user_id == user_id).order_by(Posts.created_at.desc()).all()
         
         return Posts.query.filter(Posts.status == status)\
@@ -514,6 +527,8 @@ def edit_post(id, category_id, issales, address, type, area, price, bedrooms, \
         post.status = PostsStatusEnum.EXPIRED
     elif post.status in [PostsStatusEnum.EDITED, PostsStatusEnum.WAITING]:
         post.status = PostsStatusEnum.EDITED
+    elif due > datetime.now() and post.status in [PostsStatusEnum.EXPIRED, PostsStatusEnum.ACCEPTED]:
+        post.status = PostsStatusEnum.ACCEPTED
     
     post.updated_at = datetime.now()
     post.expire_at = expire_at
@@ -565,7 +580,7 @@ def edit_post(id, category_id, issales, address, type, area, price, bedrooms, \
             "updated_at": post.updated_at,
             "category": post.category.name,
             "issales": "Mua Bán" if post.issales else "Cho Thuê",
-            "image": post.images[0]
+            "image": post.images[0].url
         }
         es.index(index=index_name, id=post.id, body=data)
 
@@ -590,7 +605,7 @@ def accept_post(id):
         "updated_at": post.updated_at,
         "category": post.category.name,
         "issales": "Mua Bán" if post.issales else "Cho Thuê",
-        "image": post.images[0]
+        "image": post.images[0].url
     }
     es.index(index=index_name, id=post.id, body=data)
     post.created_at = datetime.now()
@@ -621,6 +636,15 @@ def remove_post(id):
                         }
                     }
                 })
+    log = Logs.query.filter(Logs.post_id == id).all()
+    for l in log:
+        if l:
+            db.session.delete(l)
+    imgs = Images.query.filter(Images.post_id == id).all()
+    for i in imgs:
+        if i:
+            db.session.delete(i)
+    
     db.session.delete(post)
     db.session.commit()
 
@@ -645,7 +669,7 @@ def recovery_post(id):
         "updated_at": post.updated_at,
         "category": post.category.name,
         "issales": "Mua Bán" if post.issales else "Cho Thuê",
-        "image": post.images[0]
+        "image": post.images[0].url
     }
     es.index(index=index_name, id=post.id, body=data)
     post.updated_at = datetime.now()
@@ -653,7 +677,7 @@ def recovery_post(id):
 
 
 def get_log(post_id, user_id):
-    return Logs.query.filter(Logs.post_id==post_id, Logs.user_id==user_id).order_by(Logs.date.desc()).first()
+    return Logs.query.filter(Logs.post_id==post_id, Logs.user_id==user_id).order_by(Logs.date.desc()).all()
 
 
 def get_logs(user_id, action):
@@ -673,28 +697,31 @@ def save_log(post_id=None, user_id=None, date=datetime.now(), action=LogActionEn
 def delete_viewed_post(post_id, user_id):
     logs = Logs.query.filter(Logs.post_id == post_id, Logs.user_id==user_id, Logs.action==LogActionEnum.VIEW).all()
     for log in logs:
-        db.session.delete(log)
+        if log:
+            db.session.delete(log)
     db.session.commit()
 
 
 def delete_saved_post(post_id, user_id):
     logs = Logs.query.filter(Logs.post_id == post_id, Logs.user_id==user_id, Logs.action==LogActionEnum.SAVED).all()
     for log in logs:
-        db.session.delete(log)
+        if log:
+            db.session.delete(log)
     db.session.commit()
 
 
 def react_post(post_id, user_id):
     post = Posts.query.get(post_id)
     user = get_user_by_id(user_id)
-    try:
-        log = get_log(post.id, user.id)
-        db.session.delete(log)
-        db.session.commit()
-        return -1
-    except:
-        save_log(post_id=post.id, user_id=user.id, date=datetime.now(), action=LogActionEnum.SAVED)
-        return 1
+    logs = get_log(post.id, user.id)
+    if logs:
+        for log in logs:
+            if log.action == LogActionEnum.SAVED:
+                db.session.delete(log)
+                db.session.commit()
+                return -1
+    save_log(post_id=post.id, user_id=user.id, date=datetime.now(), action=LogActionEnum.SAVED)
+    return 1
 
 
 def load_images_by_post_id(post_id):
@@ -708,13 +735,31 @@ def stats_category():
 
 
 def statistics(month=None):
-    if month != 0:
+    year = int(month.split("-")[0])
+    mth = int(month.split("-")[1])
+    if mth != 0:
         query = db.session.query(extract('day', Posts.created_at), func.count(Posts.id)) \
-                            .filter(extract('month', Posts.created_at) == month)\
+                            .filter(and_(extract('year', Posts.created_at) == year, extract('month', Posts.created_at) == mth))\
                             .group_by(func.day(Posts.created_at))
     else:
         query = db.session.query(extract('month', Posts.created_at), func.count(Posts.id)) \
-                             .group_by(func.month(Posts.created_at))
+                            .filter(extract('year', Posts.created_at) == year)\
+                            .group_by(func.month(Posts.created_at))
+    return query.all()
+
+
+def statistics2(month=None):
+    year = int(month.split("-")[0])
+    mth = int(month.split("-")[1])
+
+    if mth != 0:
+        query = db.session.query(extract('day', User.date_created), func.count(User.id)) \
+                            .filter(and_(extract('year', User.date_created) == year, extract('month', User.date_created) == mth))\
+                            .group_by(func.day(User.date_created))
+    else:
+        query = db.session.query(extract('month', User.date_created), func.count(User.id)) \
+                             .filter(extract('year', User.date_created) == year)\
+                             .group_by(func.month(User.date_created))
     return query.all()
 
 
@@ -741,6 +786,23 @@ def stats_report():
     new_reports = Reports.query.filter(Reports.status == "Chưa xử lý").count()
     all_reports = Reports.query.count()
     return new_reports, all_reports
+
+
+def export_csv():
+    today = datetime.today().date()
+    tomorrow = today + timedelta(1)
+    expired_posts = db.session.query(User.name, User.email, Posts.id, Posts.title)\
+                        .join(Posts, Posts.user_id.__eq__(User.id))\
+                        .filter(extract('year', Posts.expire_at) == tomorrow.year,
+                                  extract('month', Posts.expire_at) == tomorrow.month,
+                                  extract('day', Posts.expire_at) == tomorrow.day).all()
+    file_path = os.path.join(app.root_path, "expired-posts-%s.csv" % str(datetime.now().date()))
+
+    df = pd.DataFrame(expired_posts, columns=['auhtor_name', 'email', 'post_id', 'post_title'])
+   
+    df.to_csv(file_path, encoding="utf-8")
+
+    return file_path
 
 
 def get_user_by_id(user_id):    
@@ -776,9 +838,15 @@ def reset_password(username, new_password):
 
 def report(post_id, user_id, content):
     post = get_post_by_id(post_id)
-    post.status = PostsStatusEnum.HIDDEN
     db.session.add(Reports(user_id=user_id, post_id=post_id, content=content, status="Chưa xử lý"))
+    total = len(post.user_report)
+    if total % 10 == 0:
+        post.status = PostsStatusEnum.HIDDEN
+        db.session.commit()
+        return 1
+    
     db.session.commit()
+    return 0
 
 
 def count_bad_report(user_id):
@@ -799,7 +867,7 @@ def count_new_message(user_id):
     for c in conversations:
         last_messages.append(get_the_last_message(c.id))
     for m in last_messages:
-        if not m.is_seen and m.sent_from != user_id:
+        if m and not m.is_seen and m.sent_from != user_id:
             count = count + 1
     return count
 
@@ -893,6 +961,10 @@ def review(user_id, publisher_id, star, content):
         db.session.commit()
 
 
+def get_last_review(user_id, publisher_id):
+    return UserReview.query.filter(and_(UserReview.user_id == user_id, UserReview.publisher_id == publisher_id)).order_by(UserReview.review_at.desc()).first()
+
+
 def generate_path(id, filename, surface): 
     filename = secure_filename(filename)
     refilename = f"{hash_kw(id)}_{surface}.jpg"
@@ -945,14 +1017,14 @@ def remove_id_image(id):
     path_3 = os.path.join(app.config['UPLOAD_PATH'], f"{id_hash}_S.jpg")
     
     if user:
+        user.user_role = UserRoleEnum.USER
+        i = get_identifier(encrypt_data(id))
+        if i:
+            db.session.delete(i)
+        db.session.commit()        
         os.remove(path_1)
         os.remove(path_2)
         os.remove(path_3)
-        user.user_role = UserRoleEnum.USER
-        i = get_identifier(id)
-        if i:
-            db.session.delete(i)
-        db.session.commit()
         return 27
     return 9
 
@@ -1136,6 +1208,8 @@ def filter_results_by_text(lists, field, value):
     try: 
         if float(value) >= 5:
             return list(filter(lambda x: float(str(x[field]).split(" ")[0]) >= 5, lists))
+        return list(filter(lambda x: str(x[field]).__contains__(value), lists))
+
     except:
         return list(filter(lambda x: str(x[field]).__contains__(value), lists))
 
@@ -1185,5 +1259,4 @@ def count_new_notify():
     if all(user==0 for user in new_request_user) and new_posts == 0 and new_reports == 0:
         return False
     return True
-
 

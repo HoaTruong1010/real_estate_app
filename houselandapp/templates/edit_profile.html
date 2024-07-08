@@ -16,7 +16,7 @@
             <ul class="flex menu-items">
                 <li class="mr-2">
                     <form method="get" class="d-flex justify-content-center h-100 " id="search-form" autocomplete="on">
-                        <div class="searchbar d-flex justify-content-between align-items-center">                            
+                        <div class="searchbar d-flex justify-content-between align-items-center">
                             {% if parameters['issales'] == 'true' %}
                             <select class="selectpicker" id="issales">
                                 <option selected value="true">Cần mua</option>
@@ -30,7 +30,8 @@
                             {%endif%}
 
                             {% if parameters['q'] %}
-                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..." value="{{parameters['q']}}">
+                            <input class="search_input" type="text" name="q" placeholder="Từ khóa..."
+                                value="{{parameters['q']}}">
                             {%else%}
                             <input class="search_input" type="text" name="q" placeholder="Từ khóa..." value="">
                             {%endif%}
@@ -165,20 +166,23 @@
     <div class="col-8">
 
         {% if current_user.id != user.id %}
-        {% if current_user.user_role == admin %}
+        {% if current_user.user_role == admin and (user.user_role == publisher or user.user_role == restricted) %}
         <form method="post" class="form-group" id="restrict-form">
             <div class="form-row">
-                <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px; margin: 5% 0;">Hạn chế quyền đăng bài viết
+                <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px; margin: 5% 0;">Hạn chế quyền đăng
+                    bài viết
                 </h4>
             </div>
             <div class="form-row">
                 <div class="col-md-6">
                     <label for="start">Từ: <span style="color:red">*</span></label>
-                    <input type="datetime-local" class="form-control" value="{{identifier.restrict_from}}" id="start" required name="start">
+                    <input type="datetime-local" class="form-control" value="{{identifier.restrict_from}}" id="start"
+                        required name="start">
                 </div>
                 <div class="col-md-6">
                     <label for="end">Đến: <span style="color:red">*</span> </label>
-                    <input type="datetime-local" class="form-control" value="{{identifier.restrict_to}}" id="end" required name="end">
+                    <input type="datetime-local" class="form-control" value="{{identifier.restrict_to}}" id="end"
+                        required name="end">
 
                     {% if status['id'] == 50%}
                     <div class="invalid-feedback" id="failed">
@@ -191,6 +195,7 @@
                 type="submit">Lưu thay đổi
             </button>
         </form>
+        {%endif%}
         <form method="post" class="form-group" id="contact-form">
             <div class="form-row">
                 <h4 style="border-bottom: 1px solid; width: 100%; padding-bottom: 5px; margin: 5% 0;">Thông tin liên hệ
@@ -227,7 +232,6 @@
                 type="submit">Lưu thay đổi
             </button>
         </form>
-        {%endif%}
         {%else%}
         <form method="post" class="form-group" style=" margin:0 auto;" id="infor-form" method="post">
             <div class="form-row">
@@ -377,6 +381,9 @@
             </button>
 
         </form>
+        <form method="post" id="del-acc">
+            <input style="display: none;" type="text" name="delete-account-true">
+        </form>
         {%endif%}
         <form class="form-group" style=" margin:0 auto; " method="post" enctype="multipart/form-data">
             <div class="form-row">
@@ -414,8 +421,7 @@
             <div class="form-row">
                 <div class="col-md-8">
                     <label for="r_name">Họ và tên: </label>
-                    <input type="text" class="form-control" id="name" required value="{{ifull_name}}"
-                        name="r_name">
+                    <input type="text" class="form-control" id="name" required value="{{ifull_name}}" name="r_name">
                 </div>
                 <div class="col-md-4">
                     <label for="r_gender">Giới tính: </label>
@@ -456,8 +462,12 @@
                 </div>
 
                 <div class="col-md-12 mt-2">
+                    {% if user.user_role == half_publisher %}
+                    <label for="r_expire_date">Ngày gửi hồ sơ: </label>
+                    {% else %}
                     <label for="r_expire_date">Ngày duyệt hồ sơ: </label>
-                    <p class="form-control" >{{identifier.accept_at}}</p>
+                    {% endif %}
+                    <p class="form-control">{{identifier.accept_at}}</p>
                 </div>
             </div>
             {%endif%}
@@ -570,11 +580,11 @@
             </div>
 
             {% block push %}
-            <button style="height: 40px; width: 130px; margin: 20px 0; display: block;" name="pre-register" class="btn btn-primary"
-                type="button">Đăng ký
+            <button style="height: 40px; width: 130px; margin: 20px 0; display: block;" name="pre-register"
+                class="btn btn-primary" type="button">Đăng ký
             </button>
-            <button style="height: 40px; width: 130px; margin: 20px auto; display: none;" name="register" class="btn btn-primary"
-                type="submit">Đăng ký
+            <button style="height: 40px; width: 130px; margin: 20px auto; display: none;" name="register"
+                class="btn btn-primary" type="submit">Đăng ký
             </button>
             {% endblock %}
             {% endif %}
@@ -596,11 +606,14 @@
                 element.setAttribute("disabled", "");
             });
         }
-        document.querySelector("button[name='cancel']").addEventListener("click", (e) => {
-            if (confirm("Bạn có chắc chắn hủy đăng ký trở thành nhà môi giới?") == false) {
-                e.preventDefault();
-            }
-        });
+        let cancelBtn = document.querySelector("button[name='cancel']");
+        if (cancelBtn) {
+            cancelBtn.addEventListener("click", (e) => {
+                if (confirm("Bạn có chắc chắn hủy đăng ký trở thành nhà môi giới?") == false) {
+                    e.preventDefault();
+                }
+            });
+        }
     };
 
 </script>

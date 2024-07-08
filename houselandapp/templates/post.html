@@ -1,4 +1,4 @@
-{% if current_user.is_authenticated and current_user.user_role == publisher or current_user.user_role == admin %}
+{% if current_user.is_authenticated and current_user.user_role == publisher or current_user.user_role == admin or (current_user.user_role == restricted and post) %}
 {% extends "/layout/base.html" %}
 {% block css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
@@ -376,7 +376,6 @@
                 {% block status %}
 
                 {% endblock %}
-                <p id="err-msg-expire-at" style="color: red;font-size: 10px;"></p>
             </div>
         </div>
         <div class="form-row">
@@ -452,7 +451,7 @@
     <p>Vui lòng <a href="/login_register?next=/post">đăng nhập</a> trước khi đăng
         tin!</p>
 </div>
-{% elif expire %}
+{% elif expire and not post %}
 <div>
     <p>Tài khoản của bạn bị cấm đăng bài cho tới thời điểm <span style="color: red;">{{expire}}</span>!</p>
 </div>

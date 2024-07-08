@@ -41,7 +41,7 @@ function submitForm(params) {
 var params = {
   page: null,
   sort: null,
-  'text-address': null,
+  "text-address": null,
   address: null,
   "min-price": null,
   "max-price": null,
@@ -62,8 +62,7 @@ window.onload = function () {
       let text = locationInput.value;
       if (text.length == 0 && e.key != 8 && e.key != 46) {
         resultsBox.innerHTML = "";
-      }
-      else if (text.length) {
+      } else if (text.length) {
         fetch(
           `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(
             text
@@ -122,9 +121,11 @@ window.onload = function () {
     let address = urlParams.get("address");
     params["address"] = address;
     locationInput.value = urlParams.get("text-address");
+    document.querySelector("#latlon").value = address;
+    params["text-address"] = urlParams.get("text-address");
   } else {
     params["address"] = null;
-    params['text-address'] = null;
+    params["text-address"] = null;
   }
   if (urlParams.has("min-price") && urlParams.has("max-price")) {
     params["min-price"] = urlParams.get("min-price");
@@ -171,7 +172,6 @@ window.onload = function () {
   if (urlParams.has("page")) {
     let page = urlParams.get("page");
     document.getElementsByClassName("number")[page - 1].classList.add("active");
-    params['page'] = page;
   }
   $("#select-dropdown-container-60853").hide();
   changePrice();
@@ -212,11 +212,11 @@ if (selectOptions) {
       }
       let adrs = document.querySelector("input#latlon").value;
       if (adrs) {
-        params['address'] = adrs;
-        params['text-address'] = document.querySelector("#location").value;
+        params["address"] = adrs;
+        params["text-address"] = document.querySelector("#location").value;
       } else {
         params["address"] = null;
-        params['text-address'] = null;
+        params["text-address"] = null;
       }
       if (areaRanges[0].value != 0 || areaRanges[1].value != 200) {
         params["min-area"] = areaRanges[0].value;
@@ -257,7 +257,7 @@ const locationBtn = document.querySelector("#div__location button");
 if (locationBtn) {
   locationBtn.addEventListener("click", () => {
     params["address"] = document.querySelector("input#latlon").value;
-    params['text-address'] = document.querySelector("input#location").value;
+    params["text-address"] = document.querySelector("input#location").value;
     if ($(".select-input.form-control[readonly]").val() != "Mặc định") {
       params["sort"] = $(".select-input.form-control[readonly]").val();
     } else {
@@ -317,11 +317,11 @@ if (priceRanges) {
       }
       let adrs = document.querySelector("input#latlon").value;
       if (adrs) {
-        params['address'] = adrs;
-        params['text-address'] = document.querySelector("#location").value;
+        params["address"] = adrs;
+        params["text-address"] = document.querySelector("#location").value;
       } else {
         params["address"] = null;
-        params['text-address'] = null;
+        params["text-address"] = null;
       }
       if (areaRanges[0].value != 0 || areaRanges[1].value != 200) {
         params["min-area"] = areaRanges[0].value;
@@ -371,11 +371,11 @@ if (areaRanges) {
       }
       let adrs = document.querySelector("input#latlon").value;
       if (adrs) {
-        params['address'] = adrs;
-        params['text-address'] = document.querySelector("#location").value;
+        params["address"] = adrs;
+        params["text-address"] = document.querySelector("#location").value;
       } else {
         params["address"] = null;
-        params['text-address'] = null;
+        params["text-address"] = null;
       }
       if (priceRanges[0].value != 0 || priceRanges[1].value != 200) {
         params["min-price"] = priceRanges[0].value;
@@ -438,11 +438,11 @@ if (bedroomsNum) {
       }
       let adrs = document.querySelector("input#latlon").value;
       if (adrs) {
-        params['address'] = adrs;
-        params['text-address'] = document.querySelector("#location").value;
+        params["address"] = adrs;
+        params["text-address"] = document.querySelector("#location").value;
       } else {
         params["address"] = null;
-        params['text-address'] = null;
+        params["text-address"] = null;
       }
       if (typeOfs) {
         typeOfs.forEach((item) => {
@@ -487,11 +487,72 @@ if (typeOfs) {
       }
       let adrs = document.querySelector("input#latlon").value;
       if (adrs) {
-        params['address'] = adrs;
-        params['text-address'] = document.querySelector("#location").value;
+        params["address"] = adrs;
+        params["text-address"] = document.querySelector("#location").value;
       } else {
         params["address"] = null;
-        params['text-address'] = null;
+        params["text-address"] = null;
+      }
+      if (bedroomsNum) {
+        bedroomsNum.forEach((item) => {
+          if (item.checked && item.value != 0) {
+            params["bedrooms"] = item.value;
+          } else {
+            params["bedrooms"] = null;
+          }
+        });
+      } else {
+        params["bedrooms"] = null;
+      }
+
+      submitForm(params);
+      console.log(params);
+    });
+  });
+}
+
+const pages = document.querySelectorAll("a.page-number");
+if (pages) {
+  pages.forEach((item, index) => {
+    item.addEventListener("click", () => {
+      params['page'] = parseInt(item.classList[0]);
+      if (typeOfs) {
+        typeOfs.forEach((item) => {
+          if (item.checked && item.value != "all") {
+            params["type-of"] = item.value;
+          } else {
+            params["type-of"] = null;
+          }
+        });
+      } else {
+        params["type-of"] = null;
+      }
+      if ($(".select-input.form-control[readonly]").val() != "Mặc định") {
+        params["sort"] = $(".select-input.form-control[readonly]").val();
+      } else {
+        params["sort"] = null;
+      }
+      if (priceRanges[0].value != 0 || priceRanges[1].value != 200) {
+        params["min-price"] = priceRanges[0].value;
+        params["max-price"] = priceRanges[1].value;
+      } else {
+        params["min-price"] = null;
+        params["max-price"] = null;
+      }
+      if (areaRanges[0].value != 0 || areaRanges[1].value != 200) {
+        params["min-area"] = areaRanges[0].value;
+        params["max-area"] = areaRanges[1].value;
+      } else {
+        params["min-area"] = null;
+        params["max-area"] = null;
+      }
+      let adrs = document.querySelector("input#latlon").value;
+      if (adrs) {
+        params["address"] = adrs;
+        params["text-address"] = document.querySelector("#location").value;
+      } else {
+        params["address"] = null;
+        params["text-address"] = null;
       }
       if (bedroomsNum) {
         bedroomsNum.forEach((item) => {

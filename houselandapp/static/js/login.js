@@ -353,3 +353,9 @@ var renderData = (array, select) => {
 };
 
 callAPI("https://vapi.vnappmob.com/api/province/");
+
+const socket = io({ autoConnect: false });
+socket.connect();
+socket.on("connect", () => {
+    socket.emit("user_join", "I'm connected!");
+});

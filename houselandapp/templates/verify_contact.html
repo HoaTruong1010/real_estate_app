@@ -1,7 +1,14 @@
 {% extends 'otpVerification.html' %}
 
 {% block notify %}
-
+{% if err_msg and err_msg['is_true'] == False and err_msg['id'] != -1 %}
+<div class="alert alert-error">
+  <div class="icon__wrapper">
+    <span class="mdi mdi-alert-outline"><i class='bx bx-error'></i></span>
+  </div>
+  <p>{{err_msg['content']}}</p>
+</div>
+{% endif %}
 {% endblock %}
 
 

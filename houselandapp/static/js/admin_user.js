@@ -141,7 +141,8 @@ function loadDataRows(user_role) {
             user_role = `<span class="badge text-secondary badge-dot mr-4">
                         <i class="bg-secondary"></i> ${item.user_role}
                       </span> `;
-            action = `<a onclick="action('reset', '${id}')" style="color:yellow; font-size:15px; margin-left: 7px;" href="javascript:" title="Reset Password"> <i class="fas fa-key"></i></a>`;
+            action = `<a onclick="action('reset', '${id}')" style="color:yellow; font-size:15px; margin-left: 7px;" href="javascript:" title="Reset Password"> <i class="fas fa-key"></i></a> 
+                      <a style="font-size:15px; margin-left: 7px;" target="_blank" href="/profile/edit_profile/${id}" title="Edit Account"> <i class="fas fa-edit"></i></a>`;
             if (!item.active) {
               action += `<a onclick="action('delete', '${id}')" style="color:red; font-size:15px; margin-left: 7px;" href="javascript:" title="Delete"> <i class="fas fa-trash"></i></a>`;
             }
@@ -241,7 +242,7 @@ $("#waiting-delete").click(function () {
 $("#search").keyup(function () {
   var kw = $(this).val();
   if (dataRows) {
-    document.getElementById('total').textContent = rows.length;
+    document.getElementById('total').textContent = dataRows.length;
     var tableRow = "";
     rows = dataRows.filter(function (item) {
       if (item.phone == null) {

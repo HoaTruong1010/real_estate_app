@@ -3,16 +3,16 @@ from math import ceil
 from flask_mail import Message
 from flask_admin.contrib.sqla import ModelView
 from houselandapp import app, dao, db, mail, socketio
-from flask import redirect, url_for, jsonify, request, abort, flash
+from flask import redirect, url_for, jsonify, request, abort, flash, send_file
 from flask_login import current_user, logout_user
 from flask_admin import Admin, expose, BaseView, AdminIndexView
-from models import UserRoleEnum, Posts, Reports, User
+from models import UserRoleEnum, Posts, Reports, User, PostsStatusEnum
 from flask_socketio import emit
 import random, string
 from flask_admin.helpers import get_redirect_target
 from flask_admin.model.helpers import get_mdict_item_or_list
 from gettext import gettext
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class AuthenticatedIndexView(AdminIndexView):
     def is_accessible(self):
@@ -29,10 +29,33 @@ class AuthenticatedModelView(ModelView):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
 
 
-@app.route("/api/stats_post/<int:month>", methods=["POST"])
+@app.route("/api/stats_post/<string:month>", methods=["POST"])
 def stats_posts(month):
     try:
         result = dao.statistics(month)
+        data = []
+        for r in result:
+            data.append({
+                'param_1': r[0],
+                'param_2': r[1]
+            })
+        return jsonify({
+            "status": 200,
+            "message": "successful",
+            "data": data
+        })
+    except:
+        return jsonify({
+            "status": 500,
+            "message": "failed",
+            "data": []
+        })
+    
+
+@app.route("/api/stats_acc/<string:month>", methods=["POST"])
+def stats_accs(month):
+    try:
+        result = dao.statistics2(month)
         data = []
         for r in result:
             data.append({
@@ -87,27 +110,38 @@ def send_message(email, subject, msg_body, name):
     mail.send(msg)
 
 
-@app.route("/api/handle_report/<int:user_report_id>/<string:action_name>/<int:post_id>", methods=["POST"])
-def handle_report_by_id(user_report_id, action_name, post_id):
+@app.route("/api/handle_report/<string:action_name>/<int:post_id>", methods=["POST"])
+def handle_report_by_id(action_name, post_id):
     try:
         user = dao.get_user_by_post_id(post_id)
         post = dao.get_post_by_id(post_id)
         if action_name == "hide":
             dao.hide_post(post_id)
-            dao.handle_report(user_report_id, post_id, "Đã ẩn bài viết")
+            dao.handle_report(post_id, "Đã ẩn bài viết")
             subject = "[Thông báo] Bài viết của bạn đã bị ẩn!"
             msg_body = "Chúng tôi đã nhận báo cáo rằng bài viết của bạn bị vi phạm về nội dung.\n" \
                        "Sau quá trình xem xét, Afforda rất tiếc phải thông báo rằng bài viết của bạn đã bị ẩn do có nội dung không hợp lệ!\nChúng tôi rất tiếc về việc này!\n" \
                        f"Để biết thêm chi tiết vui lòng liên hệ qua email này hoặc hotline 0399411749!\n\nThông tin bài viết:\nTiêu đề: \"{post.title}\" \nMã bài viết: {post.id}"
-            send_message(user.email, subject, msg_body, user.name)
+            send_message(user.email, subject, msg_body, user.name)            
+            (d,m) = divmod(len(dao.load_posts_by_status("Đã bị ẩn")), 5)
+            duration = 7
+            if d != 0 and m == 0:
+                duration = duration * d
+                today = user.identifier[0].restrict_to if user.identifier else datetime.now()
+                future = today + timedelta(duration)
+                dao.restrict_user(user.id, today, future)
+                subject = "[Thông báo] Tướt quyền đăng bài viết ngắn hạn trên Afforda.com.vn!"
+                msg_body = msg_body = f"Afforda.com.vn rất tiếc phải thông báo rằng: Tài khoản của bạn đã bị cấm đăng bài từ thời điểm {today} đến thời điểm {future} trên website của chúng tôi!Sau khoảng thời gian trên tài khoản của bạn sẽ được khôi phục!\nVì chúng tôi đã nhận nhiều báo cáo về các bài viết mà tài khoản của bạn đăng tải!"
+                send_message(user.email, subject, msg_body, user.name)
         if action_name == "recovery":
             dao.recovery_post(post_id)
-            dao.handle_report(user_report_id, post_id, "Đã khôi phục")
-            subject = "[Thông báo] Bài viết của bạn đã được khôi phục!"
-            msg_body = "Chúng tôi đã nhận báo cáo rằng bài viết của bạn bị vi phạm về nội dung.\n" \
-                       "Sau khi xem xét, Afforda rất hân hạnh thông báo rằng bài viết của bạn đã được khôi phục do báo cáo sai!\n" \
-                       f"Chúng tôi xin lỗi vì sự bất tiện này!\n\nThông tin bài viết:\nTiêu đề: \"{post.title}\" \nMã bài viết: {post.id}"
-            send_message(user.email, subject, msg_body, user.name)
+            dao.handle_report(post_id, "Đã xử lý")
+            if post.status == PostsStatusEnum.HIDDEN:
+                subject = "[Thông báo] Bài viết của bạn đã được khôi phục!"
+                msg_body = "Chúng tôi đã nhận báo cáo rằng bài viết của bạn bị vi phạm về nội dung.\n" \
+                        "Sau khi xem xét, Afforda rất hân hạnh thông báo rằng bài viết của bạn đã được khôi phục do báo cáo sai!\n" \
+                        f"Chúng tôi xin lỗi vì sự bất tiện này!\n\nThông tin bài viết:\nTiêu đề: \"{post.title}\" \nMã bài viết: {post.id}"
+                send_message(user.email, subject, msg_body, user.name)
         return jsonify({
             "status": 200,
             "message": "successful",
@@ -261,6 +295,11 @@ def action_users(id, action):
         abort(404)        
 
 
+@app.route("/posts/expired/export")
+def export_expired_posts():
+    return send_file(dao.export_csv())
+
+
 class MyAdminView(AuthenticatedIndexView):
     @expose('/')
     def index(self):
@@ -359,6 +398,7 @@ class UserView(AuthenticatedModelView):
 
     @expose('/')
     def index_view(self):
+        dao.delete_account_not_active()
         new_requests = dao.count_request_user()         
         user_badges = dao.count_request_user()
         is_new_user = all(item == 0 for item in user_badges)
@@ -399,7 +439,7 @@ class ExitView(AuthenticatedView):
         return redirect(url_for('home'))
 
 
-admin = Admin(app=app, name='QUẢN LÝ BÀI VIẾT', template_mode='bootstrap4', index_view=MyAdminView())
+admin = Admin(app=app, name='AFFORDA - ADMIN', template_mode='bootstrap4', index_view=MyAdminView())
 admin.add_view(UserView(User, db.session, name="Tài khoản", endpoint="users"))
 admin.add_view(PostsView(Posts, db.session, name="Tin đăng", endpoint="posts"))
 admin.add_view(ReportView(Reports, db.session, name="Báo cáo", endpoint="report"))
